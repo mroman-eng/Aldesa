@@ -1,0 +1,15 @@
+# Terraform local artifacts
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/*.auto.tfvars.json
+**/crash.log
+
+# Dataform / Node local artifacts
+.df-credentials.json
+node_modules/
+
+# Python local artifacts
+**/__pycache__/
+**/*.py[cod]
