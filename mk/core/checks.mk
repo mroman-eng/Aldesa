@@ -67,6 +67,38 @@ _check_gcp_auth:
 		echo "  gcloud auth application-default print-access-token >/dev/null"; \
 		exit 1; \
 	fi
+	@if [ "$(CI)" != "true" ]; then \
+		adc_file="$${GOOGLE_APPLICATION_CREDENTIALS:-$$HOME/.config/gcloud/application_default_credentials.json}"; \
+		if [ -f "$$adc_file" ]; then \
+			adc_type=""; \
+			adc_impersonation_url=""; \
+			if command -v jq >/dev/null 2>&1; then \
+				adc_type=$$(jq -r '.type // empty' "$$adc_file" 2>/dev/null || true); \
+				adc_impersonation_url=$$(jq -r '.service_account_impersonation_url // empty' "$$adc_file" 2>/dev/null || true); \
+			elif command -v python3 >/dev/null 2>&1; then \
+				adc_type=$$(python3 -c 'import json,sys; j=json.load(open(sys.argv[1])); print(j.get("type",""))' "$$adc_file" 2>/dev/null || true); \
+				adc_impersonation_url=$$(python3 -c 'import json,sys; j=json.load(open(sys.argv[1])); print(j.get("service_account_impersonation_url",""))' "$$adc_file" 2>/dev/null || true); \
+			fi; \
+			if [ "$$adc_type" = "impersonated_service_account" ] && [ -n "$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT" ]; then \
+				adc_target_sa=$$(echo "$$adc_impersonation_url" | sed -n 's#.*serviceAccounts/\\([^:]*\\):.*#\\1#p'); \
+				if [ -z "$$adc_target_sa" ] || [ "$$adc_target_sa" = "$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT" ]; then \
+					echo "Detected ADC type=impersonated_service_account in $$adc_file."; \
+					echo "Local make mode already exports GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT."; \
+					echo "This creates double impersonation and can fail in Terraform with:"; \
+					echo "  Permission 'iam.serviceAccounts.getAccessToken' denied"; \
+					echo "Recreate USER ADC (non-impersonated) and keep impersonation only via env vars:"; \
+					echo "  gcloud config unset auth/impersonate_service_account"; \
+					echo "  unset GOOGLE_APPLICATION_CREDENTIALS"; \
+					echo "  gcloud auth application-default revoke"; \
+					echo "  gcloud auth application-default login"; \
+					echo "  gcloud auth application-default set-quota-project $(GOOGLE_PROJECT)"; \
+					echo "  export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$(TF_SA_EMAIL)"; \
+					echo "  export GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; \
+					exit 1; \
+				fi; \
+			fi; \
+		fi; \
+	fi
 
 _check_bootstrap_dir:
 	@if [ ! -d "$(BOOTSTRAP_DIR)" ]; then \
@@ -76,21 +108,21 @@ _check_bootstrap_dir:
 
 _check_bootstrap_impersonation_auth:
 	@if [ "$(CI)" = "true" ]; then \
-		echo "Bootstrap must run manually with user ADC + impersonation. CI=true is not allowed for bootstrap."; \
-		exit 1; \
+		echo "Bootstrap auth mode: CI=true, using ambient credentials (Cloud Build SA/WIF/metadata)."; \
+	else \
+		if ! command -v gcloud >/dev/null 2>&1; then \
+			echo "gcloud is required for bootstrap impersonation pre-checks."; \
+			exit 1; \
+		fi; \
+		if ! gcloud auth print-access-token --impersonate-service-account="$(TF_SA_EMAIL)" >/dev/null 2>&1; then \
+			echo "Cannot impersonate Terraform SA $(TF_SA_EMAIL)."; \
+			echo "Grant roles/iam.serviceAccountTokenCreator on that SA to your user/group and run:"; \
+			echo "  gcloud auth login"; \
+			echo "  gcloud auth application-default login"; \
+			exit 1; \
+		fi; \
+		echo "Bootstrap auth mode: impersonating $(TF_SA_EMAIL)."; \
 	fi
-	@if ! command -v gcloud >/dev/null 2>&1; then \
-		echo "gcloud is required for bootstrap impersonation pre-checks."; \
-		exit 1; \
-	fi
-	@if ! gcloud auth print-access-token --impersonate-service-account="$(TF_SA_EMAIL)" >/dev/null 2>&1; then \
-		echo "Cannot impersonate Terraform SA $(TF_SA_EMAIL)."; \
-		echo "Grant roles/iam.serviceAccountTokenCreator on that SA to your user/group and run:"; \
-		echo "  gcloud auth login"; \
-		echo "  gcloud auth application-default login"; \
-		exit 1; \
-	fi
-	@echo "Bootstrap auth mode: impersonating $(TF_SA_EMAIL)."
 
 _check_foundation_dir:
 	@if [ ! -d "$(FOUNDATION_DIR)" ]; then \
@@ -143,8 +175,8 @@ _check_bootstrap_state_bucket:
 		if [ -n "$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT" ]; then impersonation_flag="--impersonate-service-account=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; fi; \
 		if ! gcloud storage buckets describe gs://$(TFSTATE_BACKEND_BUCKET) --project=$(GOOGLE_PROJECT) $$impersonation_flag >/dev/null 2>&1; then \
 			echo "Terraform state backend bucket not found or not accessible: gs://$(TFSTATE_BACKEND_BUCKET)"; \
-			echo "Bootstrap is manual and local-state; ensure it has already created the shared tfstate bucket."; \
-			echo "If bootstrap used a non-standard bucket name, pass TFSTATE_BACKEND_BUCKET=<bucket>."; \
+			echo "Bootstrap no longer creates the tfstate bucket."; \
+			echo "Ensure project owners created it, or pass TFSTATE_BACKEND_BUCKET=<existing_bucket>."; \
 			exit 1; \
 		fi; \
 	fi

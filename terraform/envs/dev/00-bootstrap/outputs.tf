@@ -9,7 +9,7 @@ output "enabled_services" {
 }
 
 output "state_bucket_name" {
-  description = "GCS bucket name for Terraform remote state."
+  description = "Expected GCS bucket name for Terraform remote state (owner-managed)."
   value       = module.bootstrap.state_bucket_name
 }
 

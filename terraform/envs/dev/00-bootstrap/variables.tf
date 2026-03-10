@@ -26,6 +26,16 @@ variable "additional_labels" {
   default     = {}
 }
 
+variable "bootstrap_services" {
+  description = "Project service APIs to enable during bootstrap."
+  type        = list(string)
+}
+
+variable "terraform_admin_roles" {
+  description = "Project IAM roles to bind to the pre-existing Terraform service account."
+  type        = list(string)
+}
+
 variable "state_bucket_name_override" {
   description = "Optional override for Terraform state bucket name."
   type        = string

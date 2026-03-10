@@ -1,6 +1,8 @@
 terraform {
   required_version = ">= 1.5.0"
 
+  backend "gcs" {}
+
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -13,8 +15,7 @@ terraform {
   }
 }
 
-# Bootstrap starts with local state by design. Once created, use the
-# generated GCS bucket as backend for the rest of components.
+# Bootstrap uses the shared owner-managed GCS tfstate backend.
 provider "google" {
   project = var.project_id
   region  = var.region

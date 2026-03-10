@@ -60,6 +60,101 @@ variable "additional_labels" {
   }
 }
 
+variable "bootstrap_services" {
+  description = "Project service APIs to enable during bootstrap."
+  type        = list(string)
+  default = [
+    "artifactregistry.googleapis.com",
+    "bigquery.googleapis.com",
+    "bigquerydatatransfer.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudkms.googleapis.com",
+    "composer.googleapis.com",
+    "compute.googleapis.com",
+    "dataform.googleapis.com",
+    "dataplex.googleapis.com",
+    "eventarc.googleapis.com",
+    "iam.googleapis.com",
+    "pubsub.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage.googleapis.com",
+  ]
+
+  validation {
+    condition = alltrue([
+      for svc in var.bootstrap_services :
+      can(regex("^[a-z0-9.-]+\\.googleapis\\.com$", svc))
+    ])
+    error_message = "bootstrap_services entries must be service names ending in .googleapis.com."
+  }
+
+  validation {
+    condition = length(setsubtract(
+      toset([
+        "bigquerydatatransfer.googleapis.com",
+        "cloudkms.googleapis.com",
+        "iam.googleapis.com",
+        "serviceusage.googleapis.com",
+        "storage.googleapis.com",
+      ]),
+      toset(var.bootstrap_services)
+    )) == 0
+    error_message = "bootstrap_services must include: bigquerydatatransfer.googleapis.com, cloudkms.googleapis.com, iam.googleapis.com, serviceusage.googleapis.com, storage.googleapis.com."
+  }
+}
+
+variable "terraform_admin_roles" {
+  description = "Project IAM roles to bind to the pre-existing Terraform service account."
+  type        = list(string)
+  default = [
+    "roles/artifactregistry.admin",
+    "roles/bigquery.admin",
+    "roles/cloudbuild.builds.editor",
+    "roles/cloudfunctions.admin",
+    "roles/composer.admin",
+    "roles/compute.networkAdmin",
+    "roles/compute.securityAdmin",
+    "roles/dataform.admin",
+    "roles/dataplex.admin",
+    "roles/eventarc.admin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountUser",
+    "roles/pubsub.admin",
+    "roles/run.admin",
+    "roles/secretmanager.admin",
+    "roles/serviceusage.serviceUsageAdmin",
+    "roles/storage.admin",
+  ]
+
+  validation {
+    condition     = length(var.terraform_admin_roles) > 0
+    error_message = "terraform_admin_roles cannot be empty."
+  }
+
+  validation {
+    condition = alltrue([
+      for role in var.terraform_admin_roles :
+      can(regex("^(roles/[A-Za-z0-9.]+|projects/[^/]+/roles/[A-Za-z0-9_]+)$", role))
+    ])
+    error_message = "terraform_admin_roles entries must be roles/<name> or projects/<project>/roles/<role_id>."
+  }
+
+  validation {
+    condition = length(setsubtract(
+      toset([
+        "roles/iam.serviceAccountAdmin",
+        "roles/iam.serviceAccountUser",
+        "roles/serviceusage.serviceUsageAdmin",
+      ]),
+      toset(var.terraform_admin_roles)
+    )) == 0
+    error_message = "terraform_admin_roles must include: roles/iam.serviceAccountAdmin, roles/iam.serviceAccountUser, roles/serviceusage.serviceUsageAdmin."
+  }
+}
+
 variable "state_bucket_name_override" {
   description = "Optional override for Terraform state bucket name."
   type        = string

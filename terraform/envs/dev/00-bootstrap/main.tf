@@ -1,11 +1,13 @@
 module "bootstrap" {
   source = "../../../components/00-bootstrap"
 
-  project_id        = var.project_id
-  environment       = var.environment
-  region            = var.region
-  service_name      = var.service_name
-  additional_labels = var.additional_labels
+  project_id            = var.project_id
+  environment           = var.environment
+  region                = var.region
+  service_name          = var.service_name
+  additional_labels     = var.additional_labels
+  bootstrap_services    = var.bootstrap_services
+  terraform_admin_roles = var.terraform_admin_roles
 
   terraform_project_iam_custom_role_id  = var.terraform_project_iam_custom_role_id
   state_bucket_name_override            = var.state_bucket_name_override
