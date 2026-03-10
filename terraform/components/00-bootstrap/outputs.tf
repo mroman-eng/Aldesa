@@ -23,11 +23,6 @@ output "terraform_custom_role_name" {
   value       = local.terraform_project_iam_custom_role_name
 }
 
-output "bigquery_data_transfer_service_agent_email" {
-  description = "BigQuery Data Transfer service agent email for this project."
-  value       = google_project_service_identity.bigquery_data_transfer.email
-}
-
 output "kms_key_ring_id" {
   description = "KMS key ring ID for SOPS encryption usage."
   value       = module.sops_kms.key_ring_id

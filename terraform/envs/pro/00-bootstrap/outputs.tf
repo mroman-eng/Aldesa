@@ -23,11 +23,6 @@ output "terraform_custom_role_name" {
   value       = module.bootstrap.terraform_custom_role_name
 }
 
-output "bigquery_data_transfer_service_agent_email" {
-  description = "BigQuery Data Transfer service agent email for this project."
-  value       = module.bootstrap.bigquery_data_transfer_service_agent_email
-}
-
 output "kms_key_ring_id" {
   description = "KMS key ring ID for SOPS encryption usage."
   value       = module.bootstrap.kms_key_ring_id

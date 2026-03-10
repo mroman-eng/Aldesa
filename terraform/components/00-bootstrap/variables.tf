@@ -66,7 +66,6 @@ variable "bootstrap_services" {
   default = [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
-    "bigquerydatatransfer.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudkms.googleapis.com",
@@ -94,7 +93,6 @@ variable "bootstrap_services" {
   validation {
     condition = length(setsubtract(
       toset([
-        "bigquerydatatransfer.googleapis.com",
         "cloudkms.googleapis.com",
         "iam.googleapis.com",
         "serviceusage.googleapis.com",
@@ -102,7 +100,7 @@ variable "bootstrap_services" {
       ]),
       toset(var.bootstrap_services)
     )) == 0
-    error_message = "bootstrap_services must include: bigquerydatatransfer.googleapis.com, cloudkms.googleapis.com, iam.googleapis.com, serviceusage.googleapis.com, storage.googleapis.com."
+    error_message = "bootstrap_services must include: cloudkms.googleapis.com, iam.googleapis.com, serviceusage.googleapis.com, storage.googleapis.com."
   }
 }
 

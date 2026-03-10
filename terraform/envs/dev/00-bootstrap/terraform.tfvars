@@ -8,7 +8,6 @@ additional_labels = {}
 bootstrap_services = [
   "artifactregistry.googleapis.com",
   "bigquery.googleapis.com",
-  "bigquerydatatransfer.googleapis.com",
   "cloudbuild.googleapis.com",
   "cloudfunctions.googleapis.com",
   "cloudkms.googleapis.com",

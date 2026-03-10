@@ -1,0 +1,32 @@
+[
+  {
+    "mode": "NULLABLE",
+    "name": "load_date",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "dag_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "table_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "description",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "layer",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "file",
+    "type": "STRING"
+  }
+]

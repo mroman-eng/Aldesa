@@ -11,7 +11,6 @@ terraform {
   }
 }
 
-# Bootstrap uses the shared owner-managed GCS tfstate backend.
 provider "google" {
   project = var.project_id
   region  = var.region

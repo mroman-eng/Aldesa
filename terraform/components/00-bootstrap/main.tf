@@ -41,23 +41,6 @@ module "project_services" {
   services   = var.bootstrap_services
 }
 
-# Ensure BigQuery Data Transfer service agent exists in the project.
-resource "google_project_service_identity" "bigquery_data_transfer" {
-  provider = google-beta
-
-  project = var.project_id
-  service = "bigquerydatatransfer.googleapis.com"
-
-  depends_on = [module.project_services]
-}
-
-# Grant required service agent role to BigQuery Data Transfer identity.
-resource "google_project_iam_member" "bigquery_data_transfer_service_agent_role" {
-  project = var.project_id
-  role    = "roles/bigquerydatatransfer.serviceAgent"
-  member  = "serviceAccount:${google_project_service_identity.bigquery_data_transfer.email}"
-}
-
 # Read pre-existing Terraform execution service account (created by project owners).
 data "google_service_account" "terraform" {
   project    = var.project_id
