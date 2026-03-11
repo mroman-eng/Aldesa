@@ -16,8 +16,9 @@ locals {
   state_bucket_name                      = coalesce(var.state_bucket_name_override, "${var.project_id}${local.naming_environment_token}-tfstate-${var.region}")
   terraform_service_account_id           = coalesce(var.terraform_service_account_id_override, "sa-terraform-buildtrack")
   terraform_project_iam_custom_role_name = "projects/${var.project_id}/roles/${var.terraform_project_iam_custom_role_id}"
-  kms_key_ring_name                      = coalesce(var.kms_key_ring_name_override, "kr-${var.service_name}-${var.environment}-sops")
-  kms_crypto_key_name                    = coalesce(var.kms_crypto_key_name_override, "ck-${var.service_name}-${var.environment}-sops")
+  # Keep legacy names by default to avoid replacing existing keys in already-bootstrapped projects.
+  kms_key_ring_name   = coalesce(var.kms_key_ring_name_override, "kr-${var.service_name}-${var.environment}-sops")
+  kms_crypto_key_name = coalesce(var.kms_crypto_key_name_override, "ck-${var.service_name}-${var.environment}-sops")
 }
 
 # Validate generated names before creating bootstrap resources.
@@ -58,8 +59,24 @@ module "terraform_sa_bindings" {
   roles      = var.terraform_admin_roles
 }
 
-# Create KMS key ring and crypto key for SOPS use cases.
-module "sops_kms" {
+# Preserve state addresses after renaming the internal KMS module.
+moved {
+  from = module.sops_kms.google_kms_key_ring.this
+  to   = module.bootstrap_kms.google_kms_key_ring.this
+}
+
+moved {
+  from = module.sops_kms.google_kms_crypto_key.this
+  to   = module.bootstrap_kms.google_kms_crypto_key.this
+}
+
+moved {
+  from = google_kms_crypto_key_iam_member.terraform_sops_key_encrypter_decrypter
+  to   = google_kms_crypto_key_iam_member.terraform_kms_key_encrypter_decrypter
+}
+
+# Create KMS key ring and crypto key for platform encryption use cases.
+module "bootstrap_kms" {
   source = "../../modules/kms"
 
   project_id      = var.project_id
@@ -71,9 +88,9 @@ module "sops_kms" {
   depends_on = [module.project_services]
 }
 
-# Grant Terraform service account encrypt/decrypt access on the SOPS KMS key.
-resource "google_kms_crypto_key_iam_member" "terraform_sops_key_encrypter_decrypter" {
-  crypto_key_id = module.sops_kms.crypto_key_id
+# Grant Terraform service account encrypt/decrypt access on the bootstrap KMS key.
+resource "google_kms_crypto_key_iam_member" "terraform_kms_key_encrypter_decrypter" {
+  crypto_key_id = module.bootstrap_kms.crypto_key_id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = "serviceAccount:${data.google_service_account.terraform.email}"
 }

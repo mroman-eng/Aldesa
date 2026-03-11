@@ -1,0 +1,206 @@
+config {
+    type: "incremental",
+    tags: ["proj_silver"],
+    schema: "silver",
+    name: "proj",
+    description: "Carga INCREMENTAL de PROJ con nombres de campo legibles y reglas de calidad aplicadas.",
+    uniqueKey: ["MANDT","PSPNR"],
+    bigquery: {
+        partitionBy: "DATE(ingestion_timestamp_silver)",
+        clusterBy: ["PSPNR"]
+    }
+}
+
+SELECT
+
+  MANDT, 																	-- mandante
+  IFNULL(NULLIF(CAST(PSPNR AS STRING),  ''), 'NO_DEFINIDO')   AS PSPNR,		--id_proyecto_interno
+  IFNULL(NULLIF(CAST(PSPID AS STRING),  ''), 'NO_DEFINIDO')   AS PSPID,		--id_proyecto_externo
+  IFNULL(NULLIF(CAST(PSPID_EDIT AS STRING), ''), 'NO_DEFINIDO') AS PSPID_EDIT, --id_proyecto_externo_editable
+  IFNULL(NULLIF(CAST(POST1 AS STRING),  ''), 'SIN_NOMBRE')    AS POST1,		--nombre_proyecto
+  CAST(OBJNR AS STRING)                                       AS OBJNR,		--numero_objeto
+
+  -- ---------------------------------------------------------------
+  -- 2. ORGANIZACIÓN Y SOCIEDAD
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(VGSBR AS STRING), ''), 'N/A')            AS VGSBR,		--area_empresa
+  IFNULL(NULLIF(CAST(VBUKR AS STRING), ''), 'N/A')            AS VBUKR,		--sociedad_propietaria
+  --IFNULL(NULLIF(CAST(BUKRS AS STRING), ''), 'N/A')            AS BUKRS,		--sociedad_co
+  IFNULL(NULLIF(CAST(WERKS AS STRING), ''), 'N/A')            AS WERKS,		--centro
+  IFNULL(NULLIF(CAST(VKOKR AS STRING), ''), 'N/A')            AS VKOKR,		--area_controlling
+  IFNULL(NULLIF(CAST(PRCTR AS STRING), ''), 'N/A')            AS PRCTR,		--cebe
+  IFNULL(NULLIF(CAST(KOSTL AS STRING), ''), 'N/A')            AS KOSTL,		--centro_coste
+  IFNULL(NULLIF(CAST(KTRG AS STRING),  ''), 'N/A')            AS KTRG,		--objeto_coste
+  IFNULL(NULLIF(CAST(FUNC_AREA AS STRING), ''), 'N/A')        AS FUNC_AREA,	--area_funcional
+  IFNULL(NULLIF(CAST(TXJCD AS STRING), ''), 'N/A')            AS TXJCD,		--jurisdiccion_fiscal
+
+  -- ---------------------------------------------------------------
+  -- 3. RESPONSABLES Y SOLICITANTES
+  -- ---------------------------------------------------------------
+  COALESCE(SAFE_CAST(VERNR AS STRING), '0')                   AS VERNR,		--id_responsable
+  IFNULL(NULLIF(CAST(VERNA AS STRING), ''), 'NO_DEFINIDO')    AS VERNA,		--nombre_responsable
+  COALESCE(SAFE_CAST(ASTNR AS STRING), '0')                   AS ASTNR,		--id_solicitante
+  IFNULL(NULLIF(CAST(ASTNA AS STRING), ''), 'NO_DEFINIDO')    AS ASTNA,		--nombre_solicitante
+  IFNULL(NULLIF(CAST(VNAME AS STRING), ''), 'NO_DEFINIDO')    AS VNAME,		--nombre_cliente
+  IFNULL(NULLIF(CAST(ERNAM AS STRING), ''), 'NO_DEFINIDO')    AS ERNAM,		--creado_por
+  IFNULL(NULLIF(CAST(AENAM AS STRING), ''), 'NO_DEFINIDO')    AS AENAM,		--modificado_por
+
+  -- ---------------------------------------------------------------
+  -- 4. FECHAS (regla de calidad: '00000000' o '9999...' → NULL)
+  -- ---------------------------------------------------------------
+  CASE WHEN CAST(ERDAT AS STRING) IN ('00000000', '') OR ERDAT IS NULL
+       THEN NULL ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(ERDAT AS STRING))
+  END                                                           AS ERDAT,	--fecha_creacion
+
+  CASE WHEN CAST(AEDAT AS STRING) IN ('00000000', '') OR AEDAT IS NULL
+       THEN NULL ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(AEDAT AS STRING))
+  END                                                           AS AEDAT,	--fecha_ultima_modificacion_sap
+
+  CASE WHEN CAST(PLFAZ AS STRING) IN ('00000000', '') OR PLFAZ IS NULL OR CAST(PLFAZ AS STRING) LIKE '9999%'
+       THEN DATE('1970-01-01') ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(PLFAZ AS STRING))
+  END                                                           AS PLFAZ,	--fecha_inicio_plan
+
+  CASE WHEN CAST(PLSEZ AS STRING) IN ('00000000', '') OR PLSEZ IS NULL OR CAST(PLSEZ AS STRING) LIKE '9999%'
+       THEN DATE('1970-01-01') ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(PLSEZ AS STRING))
+  END                                                           AS PLSEZ,	--fecha_fin_plan
+
+  CASE WHEN CAST(AEDTE AS STRING) IN ('00000000', '') OR AEDTE IS NULL
+       THEN NULL ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(AEDTE AS STRING))
+  END                                                           AS AEDTE,	--fecha_modificacion_estado
+
+  CASE WHEN CAST(AUTOD AS STRING) IN ('00000000', '') OR AUTOD IS NULL
+       THEN NULL ELSE SAFE.PARSE_DATE('%Y%m%d', CAST(AUTOD AS STRING))
+  END                                                           AS AUTOD,	--fecha_apertura_automatica
+
+  -- ---------------------------------------------------------------
+  -- 5. ESTADO Y CONTROL DEL PROYECTO
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(STSPD AS STRING), ''), 'N/A')            AS STSPD,		--estado_sistema_pd
+  IFNULL(NULLIF(CAST(STSPR AS STRING), ''), 'N/A')            AS STSPR,		--estado_sistema_pr
+  IFNULL(NULLIF(CAST(KIMSK AS STRING), ''), 'N/A')            AS KIMSK,		--mascara_estado
+  IFNULL(NULLIF(CAST(XSTAT AS STRING), ''), 'N/A')            AS XSTAT,		--estado_usuario
+  IFNULL(NULLIF(CAST(BESTA AS STRING), ''), 'N/A')            AS BESTA,		--estado_solicitud
+  IFNULL(NULLIF(CAST(SCOPE AS STRING), ''), 'N/A')            AS `SCOPE`,	--alcance_proyecto
+  IFNULL(NULLIF(CAST(AEDTP AS STRING), ''), 'N/A')            AS AEDTP,		--tipo_modificacion_estado
+  LOEVM,																	--indicador_borrado
+  INACT,																	--indicador_inactivo
+
+  -- ---------------------------------------------------------------
+  -- 6. PLANIFICACIÓN Y JERARQUÍA
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(PWHIE AS STRING), ''), 'N/A')            AS PWHIE,		--jerarquia_proyecto
+  IFNULL(NULLIF(CAST(ZUORD AS STRING), ''), 'N/A')            AS ZUORD,		--asignacion
+  IFNULL(NULLIF(CAST(TRMEQ AS STRING), ''), 'N/A')            AS TRMEQ,		--equivalencia_termino
+  IFNULL(NULLIF(CAST(VGPLF AS STRING), ''), 'N/A')            AS VGPLF,		--perfil_planificacion_anterior
+  IFNULL(NULLIF(CAST(EWPLF AS STRING), ''), 'N/A')            AS EWPLF,		--perfil_planificacion_esperado
+  IFNULL(NULLIF(CAST(VPROF AS STRING), ''), 'N/A')            AS VPROF,		--perfil_valoracion
+  IFNULL(NULLIF(CAST(PROFL AS STRING), ''), 'N/A')            AS PROFL,		--perfil_proyecto
+  IFNULL(NULLIF(CAST(BPROF AS STRING), ''), 'N/A')            AS BPROF,		--perfil_presupuesto
+  IFNULL(NULLIF(CAST(SMPRF AS STRING), ''), 'N/A')            AS SMPRF,		--perfil_simulacion
+  IFNULL(NULLIF(CAST(PGPRF AS STRING), ''), 'N/A')            AS PGPRF,		--perfil_generacion_plan
+  IFNULL(NULLIF(CAST(PPROF AS STRING), ''), 'N/A')            AS PPROF,		--perfil_planificacion_red
+  IFNULL(NULLIF(CAST(SCPRF AS STRING), ''), 'N/A')            AS SCPRF,		--perfil_calendario
+  IFNULL(NULLIF(CAST(IMPRF AS STRING), ''), 'N/A')            AS IMPRF,		--perfil_inversion
+  IFNULL(NULLIF(CAST(FMPRF AS STRING), ''), 'N/A')            AS FMPRF,		--perfil_gestion_fondos
+  IFNULL(NULLIF(CAST(KALID AS STRING), ''), 'N/A')            AS KALID,		--id_calendario
+  IFNULL(NULLIF(CAST(PLINT AS STRING), ''), 'N/A')            AS PLINT,		--indicador_planificacion_interna
+  IFNULL(NULLIF(CAST(ABGSL AS STRING), ''), 'N/A')            AS ABGSL,		--clave_liquidacion
+  IFNULL(NULLIF(CAST(POSTU AS STRING), ''), 'N/A')            AS POSTU,		--posicion_presupuesto
+  SAFE_CAST(ZTEHT AS INT64)                                   AS ZTEHT,		--numero_dias_plazo
+  SAFE_CAST(NZANZ AS INT64)                                   AS NZANZ,		--numero_periodos_netos
+  SAFE_CAST(PLNAW AS INT64)                                   AS PLNAW,		--numero_actividades_plan
+  IFNULL(NULLIF(CAST(SPSNR AS STRING), ''), 'N/A')            AS SPSNR,		--numero_proyecto_espejo
+
+  -- ---------------------------------------------------------------
+  -- 7. VENTAS Y DISTRIBUCIÓN (SD)
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(VKORG AS STRING), ''), 'N/A')            AS VKORG,		--organizacion_ventas
+  IFNULL(NULLIF(CAST(VTWEG AS STRING), ''), 'N/A')            AS VTWEG,		--canal_distribucion
+  IFNULL(NULLIF(CAST(SPART AS STRING), ''), 'N/A')            AS SPART,		--sector
+
+  -- ---------------------------------------------------------------
+  -- 8. LOCALIZACIÓN Y CLASIFICACIÓN
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(STORT AS STRING), ''), 'N/A')            AS STORT,		--ubicacion
+  IFNULL(NULLIF(CAST(LOGSYSTEM AS STRING), ''), 'N/A')        AS LOGSYSTEM,	--sistema_logico
+  IFNULL(NULLIF(CAST(KZERB AS STRING), ''), 'N/A')            AS KZERB,		--clave_bloqueo_credito
+  IFNULL(NULLIF(CAST(PARGR AS STRING), ''), 'N/A')            AS PARGR,		--grupo_parametros
+  IFNULL(NULLIF(CAST(JIBCL AS STRING), ''), 'N/A')            AS JIBCL,		--clase_jib
+  IFNULL(NULLIF(CAST(JIBSA AS STRING), ''), 'N/A')            AS JIBSA,		--subclase_jib
+  IFNULL(NULLIF(CAST(ZSCHM AS STRING), ''), 'N/A')            AS ZSCHM,		--esquema_z
+  IFNULL(NULLIF(CAST(FLGVRG AS STRING), ''), 'N/A')           AS FLGVRG,	--indicador_proceso
+  IFNULL(NULLIF(CAST(GRTOP AS STRING), ''), 'N/A')            AS GRTOP,		--grupo_topologia
+  IFNULL(NULLIF(CAST(BERST AS STRING), ''), 'N/A')            AS BERST,		--estado_informe
+  IFNULL(NULLIF(CAST(BERTR AS STRING), ''), 'N/A')            AS BERTR,		--tipo_informe
+  IFNULL(NULLIF(CAST(BERKO AS STRING), ''), 'N/A')            AS BERKO,		--cabecera_informe
+  IFNULL(NULLIF(CAST(BERBU AS STRING), ''), 'N/A')            AS BERBU,		--separador_informe
+  IFNULL(NULLIF(CAST(FERC_IND AS STRING), ''), 'N/A')         AS FERC_IND,	--indicador_ferc
+  IFNULL(NULLIF(CAST(KZBWS AS STRING), ''), 'N/A')            AS KZBWS,		--indicador_valoracion
+  IFNULL(NULLIF(CAST(RECID AS STRING), ''), 'N/A')            AS RECID,		--id_registro
+  IFNULL(NULLIF(CAST(ETYPE AS STRING), ''), 'N/A')            AS ETYPE,		--tipo_entidad
+  IFNULL(NULLIF(CAST(OTYPE AS STRING), ''), 'N/A')            AS OTYPE,		--tipo_objeto
+
+  -- ---------------------------------------------------------------
+  -- 9. CAMPOS DE PERFIL DE PLANIFICACIÓN / PROG
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(TXTSP AS STRING), ''), 'N/A')            AS TXTSP,		--idioma_texto
+  IFNULL(NULLIF(CAST(VPKSTU AS STRING), ''), 'N/A')           AS VPKSTU,	--estado_paquete_valoracion
+  IFNULL(NULLIF(CAST(DPPPROF AS STRING), ''), 'N/A')          AS DPPPROF,	--perfil_planificacion_dp
+  IFNULL(NULLIF(CAST(SPROG AS STRING), ''), 'N/A')            AS SPROG,		--programa_inicio
+  IFNULL(NULLIF(CAST(EPROG AS STRING), ''), 'N/A')            AS EPROG,		--programa_fin
+  IFNULL(NULLIF(CAST(SLWID AS STRING), ''), 'N/A')            AS SLWID,		--id_workflow
+
+  -- ---------------------------------------------------------------
+  -- 10. CAMPOS DE USUARIO PERSONALIZADOS (USR00–USR11)
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(USR00 AS STRING), ''), 'N/A')            AS USR00,		--campo_usuario_00
+  IFNULL(NULLIF(CAST(USR01 AS STRING), ''), 'N/A')            AS USR01,		--campo_usuario_01
+  IFNULL(NULLIF(CAST(USR02 AS STRING), ''), 'N/A')            AS USR02,		--campo_usuario_02
+  IFNULL(NULLIF(CAST(USR03 AS STRING), ''), 'N/A')            AS USR03,		--campo_usuario_03
+  IFNULL(NULLIF(CAST(USR04 AS STRING), ''), 'N/A')            AS USR04,		--campo_usuario_04
+  IFNULL(NULLIF(CAST(USE04 AS STRING), ''), 'N/A')            AS USE04,		--campo_usuario_04_ext
+  IFNULL(NULLIF(CAST(USR05 AS STRING), ''), 'N/A')            AS USR05,		--campo_usuario_05
+  IFNULL(NULLIF(CAST(USE05 AS STRING), ''), 'N/A')            AS USE05,		--campo_usuario_05_ext
+  IFNULL(NULLIF(CAST(USR06 AS STRING), ''), 'N/A')            AS USR06,		--campo_usuario_06
+  IFNULL(NULLIF(CAST(USE06 AS STRING), ''), 'N/A')            AS USE06,		--campo_usuario_06_ext
+  IFNULL(NULLIF(CAST(USR07 AS STRING), ''), 'N/A')            AS USR07,		--campo_usuario_07
+  IFNULL(NULLIF(CAST(USE07 AS STRING), ''), 'N/A')            AS USE07,		--campo_usuario_07_ext
+  IFNULL(NULLIF(CAST(USR08 AS STRING), ''), 'N/A')            AS USR08,		--campo_usuario_08
+  IFNULL(NULLIF(CAST(USR09 AS STRING), ''), 'N/A')            AS USR09,		--campo_usuario_09
+  IFNULL(NULLIF(CAST(USR10 AS STRING), ''), 'N/A')            AS USR10,		--campo_usuario_10
+  IFNULL(NULLIF(CAST(USR11 AS STRING), ''), 'N/A')            AS USR11,		--campo_usuario_11
+
+  -- ---------------------------------------------------------------
+  -- 11. CAMPOS ADICIONALES ZZ (extensiones cliente)
+  -- ---------------------------------------------------------------
+  IFNULL(NULLIF(CAST(ZZCEBE AS STRING),  ''), 'N/A')          AS ZZCEBE,	--extension_cebe
+  IFNULL(NULLIF(CAST(ZZSAKNR AS STRING), ''), 'N/A')          AS ZZSAKNR,	--extension_cuenta_sap
+
+  -- ---------------------------------------------------------------
+  -- 12. TRAZABILIDAD (heredada de Bronze + Silver)
+  -- ---------------------------------------------------------------
+  batch_id_raw,
+  batch_id_bronze,
+  ingestion_timestamp_raw,
+  ingestion_timestamp_bronze,
+  is_valid,
+  error_description,
+  fields_with_errors,
+
+  -- Esta función "recibe" el batch_id(run_id) de Airflow, por tanto, tendremos
+  -- el mismo valor en Raw, Bronze y Silver, en todas las filas procesas en cada
+  -- fichero parquet, lo cual nos permite seguir la "trazabilidad" del dato en
+  -- su paso por varias tablas:
+  "${audit.getBatchId()}" AS batch_id_silver,
+
+  --- este es a nivel de cada registro:
+  GENERATE_UUID() AS row_uuid_silver,
+  CURRENT_TIMESTAMP() AS ingestion_timestamp_silver,
+  "SILVER_INCREMENTAL" AS extraction_mode
+
+FROM ${ref("bronze", "proj")}
+
+/* Filtro Incremental:
+   Solo procesamos los registros que Bronze procesó en este lote de Airflow
+*/
+${when(incremental(), `WHERE batch_id_bronze = '${audit.getBatchId()}'`)}

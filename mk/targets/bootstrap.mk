@@ -9,7 +9,7 @@ bootstrap_init: _check_gcp_project _check_bootstrap_impersonation_auth _check_gc
 	remote_state_uri="gs://$$state_bucket/$$state_prefix/default.tfstate"; \
 	remote_state_exists="false"; \
 	impersonation_flag=""; \
-	if [ -n "$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT" ]; then impersonation_flag="--impersonate-service-account=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; fi; \
+	if [ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]; then impersonation_flag="--impersonate-service-account=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; fi; \
 	if command -v gcloud >/dev/null 2>&1; then \
 		if gcloud storage objects describe "$$remote_state_uri" --project="$(GOOGLE_PROJECT)" $$impersonation_flag >/dev/null 2>&1; then \
 			remote_state_exists="true"; \
@@ -55,7 +55,7 @@ _bootstrap_reconcile_kms_state:
 	@key_ring_id="projects/$(GOOGLE_PROJECT)/locations/$(GCP_REGION)/keyRings/$(BOOTSTRAP_KMS_KEY_RING_NAME)"; \
 	crypto_key_id="$$key_ring_id/cryptoKeys/$(BOOTSTRAP_KMS_CRYPTO_KEY_NAME)"; \
 	impersonation_flag=""; \
-	if [ -n "$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT" ]; then impersonation_flag="--impersonate-service-account=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; fi; \
+	if [ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]; then impersonation_flag="--impersonate-service-account=$$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"; fi; \
 	if ! command -v gcloud >/dev/null 2>&1; then \
 		echo "Warning: gcloud not found; skipping KMS import reconciliation."; \
 		exit 0; \
@@ -63,14 +63,28 @@ _bootstrap_reconcile_kms_state:
 	if ! gcloud kms keyrings describe "$(BOOTSTRAP_KMS_KEY_RING_NAME)" --location="$(GCP_REGION)" --project="$(GOOGLE_PROJECT)" $$impersonation_flag >/dev/null 2>&1; then \
 		exit 0; \
 	fi; \
-	if ! terraform -chdir=$(BOOTSTRAP_DIR) state show module.bootstrap.module.sops_kms.google_kms_key_ring.this >/dev/null 2>&1; then \
+	if ! terraform -chdir=$(BOOTSTRAP_DIR) state show module.bootstrap.module.bootstrap_kms.google_kms_key_ring.this >/dev/null 2>&1; then \
 		echo "Found existing KMS key ring in GCP. Importing into Terraform state: $$key_ring_id"; \
-		terraform -chdir=$(BOOTSTRAP_DIR) import module.bootstrap.module.sops_kms.google_kms_key_ring.this "$$key_ring_id" >/dev/null; \
+		if ! import_out=$$(terraform -chdir=$(BOOTSTRAP_DIR) import module.bootstrap.module.bootstrap_kms.google_kms_key_ring.this "$$key_ring_id" 2>&1 >/dev/null); then \
+			if echo "$$import_out" | grep -q "Resource already managed by Terraform"; then \
+				echo "KMS key ring already managed in Terraform state. Skipping import."; \
+			else \
+				echo "$$import_out"; \
+				exit 1; \
+			fi; \
+		fi; \
 	fi; \
 	if gcloud kms keys describe "$(BOOTSTRAP_KMS_CRYPTO_KEY_NAME)" --keyring="$(BOOTSTRAP_KMS_KEY_RING_NAME)" --location="$(GCP_REGION)" --project="$(GOOGLE_PROJECT)" $$impersonation_flag >/dev/null 2>&1; then \
-		if ! terraform -chdir=$(BOOTSTRAP_DIR) state show module.bootstrap.module.sops_kms.google_kms_crypto_key.this >/dev/null 2>&1; then \
+		if ! terraform -chdir=$(BOOTSTRAP_DIR) state show module.bootstrap.module.bootstrap_kms.google_kms_crypto_key.this >/dev/null 2>&1; then \
 			echo "Found existing KMS crypto key in GCP. Importing into Terraform state: $$crypto_key_id"; \
-			terraform -chdir=$(BOOTSTRAP_DIR) import module.bootstrap.module.sops_kms.google_kms_crypto_key.this "$$crypto_key_id" >/dev/null; \
+			if ! import_out=$$(terraform -chdir=$(BOOTSTRAP_DIR) import module.bootstrap.module.bootstrap_kms.google_kms_crypto_key.this "$$crypto_key_id" 2>&1 >/dev/null); then \
+				if echo "$$import_out" | grep -q "Resource already managed by Terraform"; then \
+					echo "KMS crypto key already managed in Terraform state. Skipping import."; \
+				else \
+					echo "$$import_out"; \
+					exit 1; \
+				fi; \
+			fi; \
 		fi; \
 	fi
 

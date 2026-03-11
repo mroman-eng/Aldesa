@@ -189,14 +189,14 @@ variable "terraform_project_iam_custom_role_id" {
 }
 
 variable "kms_key_ring_name_override" {
-  description = "Optional override for KMS key ring name used for SOPS secrets."
+  description = "Optional override for bootstrap KMS key ring name."
   type        = string
   default     = null
   nullable    = true
 }
 
 variable "kms_crypto_key_name_override" {
-  description = "Optional override for KMS crypto key name used for SOPS secrets."
+  description = "Optional override for bootstrap KMS crypto key name."
   type        = string
   default     = null
   nullable    = true

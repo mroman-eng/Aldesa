@@ -24,11 +24,11 @@ output "terraform_custom_role_name" {
 }
 
 output "kms_key_ring_id" {
-  description = "KMS key ring ID for SOPS encryption usage."
-  value       = module.sops_kms.key_ring_id
+  description = "KMS key ring ID managed by bootstrap."
+  value       = module.bootstrap_kms.key_ring_id
 }
 
 output "kms_crypto_key_id" {
-  description = "KMS crypto key ID for SOPS encryption usage."
-  value       = module.sops_kms.crypto_key_id
+  description = "KMS crypto key ID managed by bootstrap."
+  value       = module.bootstrap_kms.crypto_key_id
 }
