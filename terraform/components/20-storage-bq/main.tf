@@ -31,6 +31,10 @@ locals {
 
   datasphere_ingest_sa_id     = coalesce(var.datasphere_ingest_sa_id_override, "dsp-${var.service_name}-${var.environment}")
   datasphere_sa_key_secret_id = "dsp-${var.service_name}-${var.environment}-sa-key"
+  dataform_git_token_secret_id = coalesce(
+    var.dataform_git_token_secret_id_override,
+    "sec-${var.service_name}-${var.environment}-dataform-github-pat"
+  )
 
   raw_table_ids    = toset(keys(var.raw_tables))
   bronze_table_ids = toset(keys(var.bronze_tables))
@@ -279,6 +283,19 @@ resource "google_secret_manager_secret" "datasphere_ingest_sa_key" {
 
   project   = var.project_id
   secret_id = local.datasphere_sa_key_secret_id
+  labels    = local.common_labels
+
+  replication {
+    auto {}
+  }
+}
+
+# Secret container for Dataform Git token (PAT). Value is uploaded outside Terraform.
+resource "google_secret_manager_secret" "dataform_git_token" {
+  count = var.enable_dataform_git_token_secret ? 1 : 0
+
+  project   = var.project_id
+  secret_id = local.dataform_git_token_secret_id
   labels    = local.common_labels
 
   replication {

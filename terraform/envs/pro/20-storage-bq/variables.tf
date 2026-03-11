@@ -63,6 +63,19 @@ variable "datasphere_landing_bucket_roles" {
   default     = []
 }
 
+variable "enable_dataform_git_token_secret" {
+  description = "Create Secret Manager secret container for Dataform Git token."
+  type        = bool
+  default     = true
+}
+
+variable "dataform_git_token_secret_id_override" {
+  description = "Optional override for Dataform Git token secret id."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
 variable "bigquery_location_override" {
   description = "Optional override for BigQuery datasets location."
   type        = string

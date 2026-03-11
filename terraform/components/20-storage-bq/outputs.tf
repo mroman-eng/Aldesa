@@ -30,6 +30,16 @@ output "datasphere_ingest_sa_key_secret_id" {
   value       = try(google_secret_manager_secret.datasphere_ingest_sa_key[0].secret_id, null)
 }
 
+output "dataform_git_token_secret_id" {
+  description = "Secret Manager secret id used to store Dataform Git PAT."
+  value       = try(google_secret_manager_secret.dataform_git_token[0].secret_id, null)
+}
+
+output "dataform_git_token_secret_resource" {
+  description = "Secret Manager secret resource used by Dataform Git auth."
+  value       = var.enable_dataform_git_token_secret ? "projects/${var.project_id}/secrets/${local.dataform_git_token_secret_id}" : null
+}
+
 output "dataset_ids" {
   description = "Effective dataset ids by data layer."
   value = {

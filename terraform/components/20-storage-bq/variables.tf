@@ -117,6 +117,24 @@ variable "datasphere_landing_bucket_roles" {
   }
 }
 
+variable "enable_dataform_git_token_secret" {
+  description = "Create Secret Manager secret container for Dataform Git token."
+  type        = bool
+  default     = true
+}
+
+variable "dataform_git_token_secret_id_override" {
+  description = "Optional override for Dataform Git token secret id."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.dataform_git_token_secret_id_override == null || can(regex("^[A-Za-z0-9_-]{1,255}$", var.dataform_git_token_secret_id_override))
+    error_message = "dataform_git_token_secret_id_override must be a valid Secret Manager secret id."
+  }
+}
+
 variable "bigquery_location_override" {
   description = "Optional override for BigQuery datasets location."
   type        = string

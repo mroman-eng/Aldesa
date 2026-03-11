@@ -51,6 +51,8 @@ module "storage_bq" {
   enable_datasphere_ingest_service_account = var.enable_datasphere_ingest_service_account
   datasphere_ingest_sa_id_override         = var.datasphere_ingest_sa_id_override
   datasphere_landing_bucket_roles          = var.datasphere_landing_bucket_roles
+  enable_dataform_git_token_secret         = var.enable_dataform_git_token_secret
+  dataform_git_token_secret_id_override    = var.dataform_git_token_secret_id_override
 
   bigquery_location_override = var.bigquery_location_override
 

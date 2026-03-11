@@ -23,6 +23,16 @@ output "datasphere_ingest_sa_key_secret_id" {
   value       = module.storage_bq.datasphere_ingest_sa_key_secret_id
 }
 
+output "dataform_git_token_secret_id" {
+  description = "Secret id used to store Dataform Git PAT."
+  value       = module.storage_bq.dataform_git_token_secret_id
+}
+
+output "dataform_git_token_secret_resource" {
+  description = "Secret resource used by Dataform Git auth."
+  value       = module.storage_bq.dataform_git_token_secret_resource
+}
+
 output "dataset_ids" {
   description = "Effective dataset ids by data layer."
   value       = module.storage_bq.dataset_ids
