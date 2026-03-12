@@ -48,8 +48,9 @@ variable "environment_size" {
       "ENVIRONMENT_SIZE_SMALL",
       "ENVIRONMENT_SIZE_MEDIUM",
       "ENVIRONMENT_SIZE_LARGE",
+      "ENVIRONMENT_SIZE_EXTRA_LARGE",
     ], var.environment_size)
-    error_message = "environment_size must be ENVIRONMENT_SIZE_SMALL, ENVIRONMENT_SIZE_MEDIUM or ENVIRONMENT_SIZE_LARGE."
+    error_message = "environment_size must be ENVIRONMENT_SIZE_SMALL, ENVIRONMENT_SIZE_MEDIUM, ENVIRONMENT_SIZE_LARGE or ENVIRONMENT_SIZE_EXTRA_LARGE."
   }
 }
 
@@ -61,6 +62,108 @@ variable "worker_min_count" {
 
 variable "worker_max_count" {
   description = "Maximum number of Airflow workers for Composer autoscaling. Set with worker_min_count."
+  type        = number
+  default     = null
+}
+
+variable "worker_cpu" {
+  description = "CPU (vCPU) per Airflow worker."
+  type        = number
+  default     = null
+}
+
+variable "worker_memory_gb" {
+  description = "Memory (GB) per Airflow worker."
+  type        = number
+  default     = null
+}
+
+variable "worker_storage_gb" {
+  description = "Storage (GB) per Airflow worker."
+  type        = number
+  default     = null
+}
+
+variable "scheduler_count" {
+  description = "Number of Airflow schedulers."
+  type        = number
+  default     = null
+}
+
+variable "scheduler_cpu" {
+  description = "CPU (vCPU) per Airflow scheduler."
+  type        = number
+  default     = null
+}
+
+variable "scheduler_memory_gb" {
+  description = "Memory (GB) per Airflow scheduler."
+  type        = number
+  default     = null
+}
+
+variable "scheduler_storage_gb" {
+  description = "Storage (GB) per Airflow scheduler."
+  type        = number
+  default     = null
+}
+
+variable "dag_processor_count" {
+  description = "Number of Airflow DAG processors."
+  type        = number
+  default     = null
+}
+
+variable "dag_processor_cpu" {
+  description = "CPU (vCPU) per Airflow DAG processor."
+  type        = number
+  default     = null
+}
+
+variable "dag_processor_memory_gb" {
+  description = "Memory (GB) per Airflow DAG processor."
+  type        = number
+  default     = null
+}
+
+variable "dag_processor_storage_gb" {
+  description = "Storage (GB) per Airflow DAG processor."
+  type        = number
+  default     = null
+}
+
+variable "triggerer_count" {
+  description = "Number of Airflow triggerers."
+  type        = number
+  default     = null
+}
+
+variable "triggerer_cpu" {
+  description = "CPU (vCPU) per Airflow triggerer."
+  type        = number
+  default     = null
+}
+
+variable "triggerer_memory_gb" {
+  description = "Memory (GB) per Airflow triggerer."
+  type        = number
+  default     = null
+}
+
+variable "web_server_cpu" {
+  description = "CPU (vCPU) for the Airflow web server."
+  type        = number
+  default     = null
+}
+
+variable "web_server_memory_gb" {
+  description = "Memory (GB) for the Airflow web server."
+  type        = number
+  default     = null
+}
+
+variable "web_server_storage_gb" {
+  description = "Storage (GB) for the Airflow web server."
   type        = number
   default     = null
 }

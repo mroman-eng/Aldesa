@@ -60,6 +60,10 @@ variable "composer" {
   description = "Composer environment settings."
   type = object({
     airflow_config_overrides   = optional(map(string))
+    dag_processor_count        = optional(number)
+    dag_processor_cpu          = optional(number)
+    dag_processor_memory_gb    = optional(number)
+    dag_processor_storage_gb   = optional(number)
     enable_private_builds_only = optional(bool)
     enable_private_environment = optional(bool)
     env_variables              = optional(map(string))
@@ -68,9 +72,22 @@ variable "composer" {
     image_version              = optional(string)
     internal_ipv4_cidr_block   = optional(string)
     pypi_packages              = optional(map(string))
+    scheduler_count            = optional(number)
+    scheduler_cpu              = optional(number)
+    scheduler_memory_gb        = optional(number)
+    scheduler_storage_gb       = optional(number)
     service_account_id         = optional(string)
+    triggerer_count            = optional(number)
+    triggerer_cpu              = optional(number)
+    triggerer_memory_gb        = optional(number)
+    web_server_cpu             = optional(number)
+    web_server_memory_gb       = optional(number)
+    web_server_storage_gb      = optional(number)
+    worker_cpu                 = optional(number)
     worker_max_count           = optional(number)
+    worker_memory_gb           = optional(number)
     worker_min_count           = optional(number)
+    worker_storage_gb          = optional(number)
   })
   default = {}
 }

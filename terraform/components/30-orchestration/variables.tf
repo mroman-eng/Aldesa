@@ -197,6 +197,10 @@ variable "composer" {
   description = "Composer environment settings."
   type = object({
     airflow_config_overrides   = optional(map(string))
+    dag_processor_count        = optional(number)
+    dag_processor_cpu          = optional(number)
+    dag_processor_memory_gb    = optional(number)
+    dag_processor_storage_gb   = optional(number)
     enable_private_builds_only = optional(bool)
     enable_private_environment = optional(bool)
     env_variables              = optional(map(string))
@@ -205,9 +209,22 @@ variable "composer" {
     image_version              = optional(string)
     internal_ipv4_cidr_block   = optional(string)
     pypi_packages              = optional(map(string))
+    scheduler_count            = optional(number)
+    scheduler_cpu              = optional(number)
+    scheduler_memory_gb        = optional(number)
+    scheduler_storage_gb       = optional(number)
     service_account_id         = optional(string)
+    triggerer_count            = optional(number)
+    triggerer_cpu              = optional(number)
+    triggerer_memory_gb        = optional(number)
+    web_server_cpu             = optional(number)
+    web_server_memory_gb       = optional(number)
+    web_server_storage_gb      = optional(number)
+    worker_cpu                 = optional(number)
     worker_max_count           = optional(number)
+    worker_memory_gb           = optional(number)
     worker_min_count           = optional(number)
+    worker_storage_gb          = optional(number)
   })
   default = {}
 
@@ -228,9 +245,10 @@ variable "composer" {
         "ENVIRONMENT_SIZE_SMALL",
         "ENVIRONMENT_SIZE_MEDIUM",
         "ENVIRONMENT_SIZE_LARGE",
+        "ENVIRONMENT_SIZE_EXTRA_LARGE",
       ], var.composer.environment_size)
     )
-    error_message = "composer.environment_size must be ENVIRONMENT_SIZE_SMALL, ENVIRONMENT_SIZE_MEDIUM or ENVIRONMENT_SIZE_LARGE."
+    error_message = "composer.environment_size must be ENVIRONMENT_SIZE_SMALL, ENVIRONMENT_SIZE_MEDIUM, ENVIRONMENT_SIZE_LARGE or ENVIRONMENT_SIZE_EXTRA_LARGE."
   }
 
   validation {
@@ -263,6 +281,52 @@ variable "composer" {
       var.composer.worker_max_count >= var.composer.worker_min_count
     )
     error_message = "composer.worker_max_count must be greater than or equal to composer.worker_min_count."
+  }
+
+  validation {
+    condition = (
+      try(var.composer.scheduler_count, null) == null ||
+      var.composer.scheduler_count >= 1
+    )
+    error_message = "composer.scheduler_count must be greater than or equal to 1."
+  }
+
+  validation {
+    condition = (
+      try(var.composer.dag_processor_count, null) == null ||
+      var.composer.dag_processor_count >= 1
+    )
+    error_message = "composer.dag_processor_count must be greater than or equal to 1."
+  }
+
+  validation {
+    condition = (
+      try(var.composer.triggerer_count, null) == null ||
+      var.composer.triggerer_count >= 1
+    )
+    error_message = "composer.triggerer_count must be greater than or equal to 1."
+  }
+
+  validation {
+    condition = alltrue([
+      for value in [
+        try(var.composer.scheduler_cpu, null),
+        try(var.composer.scheduler_memory_gb, null),
+        try(var.composer.scheduler_storage_gb, null),
+        try(var.composer.dag_processor_cpu, null),
+        try(var.composer.dag_processor_memory_gb, null),
+        try(var.composer.dag_processor_storage_gb, null),
+        try(var.composer.triggerer_cpu, null),
+        try(var.composer.triggerer_memory_gb, null),
+        try(var.composer.web_server_cpu, null),
+        try(var.composer.web_server_memory_gb, null),
+        try(var.composer.web_server_storage_gb, null),
+        try(var.composer.worker_cpu, null),
+        try(var.composer.worker_memory_gb, null),
+        try(var.composer.worker_storage_gb, null),
+      ] : value == null || value > 0
+    ])
+    error_message = "composer workload CPU/memory/storage values must be greater than 0 when set."
   }
 }
 

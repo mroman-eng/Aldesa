@@ -19,9 +19,26 @@ output "composer_config" {
     image_version              = local.composer_image_version
     internal_ipv4_cidr_block   = local.composer_internal_ipv4_cidr_block
     pypi_packages              = local.composer_pypi_packages
+    scheduler_count            = local.composer_scheduler_count
+    scheduler_cpu              = local.composer_scheduler_cpu
+    scheduler_memory_gb        = local.composer_scheduler_memory_gb
+    scheduler_storage_gb       = local.composer_scheduler_storage_gb
+    dag_processor_count        = local.composer_dag_processor_count
+    dag_processor_cpu          = local.composer_dag_processor_cpu
+    dag_processor_memory_gb    = local.composer_dag_processor_memory_gb
+    dag_processor_storage_gb   = local.composer_dag_processor_storage_gb
     service_account_id         = local.composer_service_account_id
+    triggerer_count            = local.composer_triggerer_count
+    triggerer_cpu              = local.composer_triggerer_cpu
+    triggerer_memory_gb        = local.composer_triggerer_memory_gb
+    web_server_cpu             = local.composer_web_server_cpu
+    web_server_memory_gb       = local.composer_web_server_memory_gb
+    web_server_storage_gb      = local.composer_web_server_storage_gb
+    worker_cpu                 = local.composer_worker_cpu
     worker_max_count           = local.composer_worker_max_count
+    worker_memory_gb           = local.composer_worker_memory_gb
     worker_min_count           = local.composer_worker_min_count
+    worker_storage_gb          = local.composer_worker_storage_gb
   }
 }
 
