@@ -1,0 +1,15 @@
+timeout: 600s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        echo "hello from Cloud Build"
+        echo "repo=${REPO_NAME}"
+        echo "branch=${BRANCH_NAME}"
+        echo "commit=${COMMIT_SHA}"
