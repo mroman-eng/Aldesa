@@ -1,0 +1,13 @@
+timeout: 1800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  # Minimum Dataform validation: compile the project from the repository root.
+  - name: node:20-bookworm-slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        npx --yes --package=@dataform/cli@3.0.45 dataform compile .

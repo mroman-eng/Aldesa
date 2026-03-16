@@ -1,0 +1,17 @@
+timeout: 1800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  # Basic Python validation for DAGs and Cloud Functions:
+  # - syntax compilation
+  # - non-strict lint focused on real errors (undefined names, parse/import issues)
+  - name: python:3.11-slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        python -m pip install --no-cache-dir --quiet ruff==0.12.10
+        python -m compileall -q dags functions
+        ruff check --select F,E9 dags functions

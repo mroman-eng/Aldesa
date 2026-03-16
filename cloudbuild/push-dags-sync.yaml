@@ -1,0 +1,22 @@
+timeout: 1800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _SOURCE_DIR: dags
+  _DAGS_BUCKET: REPLACE_ME_DAGS_BUCKET # placeholder value replaced by var.dags_bucket_name
+  _DEST_PREFIX: dags
+
+steps:
+  # Sync DAG files from the repository to Composer bucket without deleting manual uploads.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [ ! -d "${_SOURCE_DIR}" ]; then
+          echo "Source DAG directory not found: ${_SOURCE_DIR}"
+          exit 1
+        fi
+        gcloud storage rsync --recursive "${_SOURCE_DIR}" "gs://${_DAGS_BUCKET}/${_DEST_PREFIX}"

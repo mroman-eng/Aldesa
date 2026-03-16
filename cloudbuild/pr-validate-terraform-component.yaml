@@ -1,0 +1,23 @@
+timeout: 1800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _ENV: dev
+  _COMPONENT_TARGET: foundation
+  _COMPONENT_DIR: 10-foundation
+  _TERRAFORM_VERSION: "1.14.4"
+
+steps:
+  # Install Terraform and helper tools in the Cloud SDK image used to run make targets.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
+        terraform fmt -check -recursive "terraform/components/${_COMPONENT_DIR}" "terraform/envs/${_ENV}/${_COMPONENT_DIR}"
+        terraform -chdir="terraform/envs/${_ENV}/${_COMPONENT_DIR}" init -backend=false -reconfigure -input=false
+        terraform -chdir="terraform/envs/${_ENV}/${_COMPONENT_DIR}" validate
+        make "${_COMPONENT_TARGET}_plan" ENV="${_ENV}" CI=true

@@ -1,0 +1,24 @@
+timeout: 10800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _ENV: dev
+  _TERRAFORM_VERSION: "1.14.4"
+
+steps:
+  # Apply Terraform components in dependency order to avoid cross-component race conditions.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
+
+        make foundation_apply    ENV="${_ENV}" CI=true
+        make storage_bq_apply    ENV="${_ENV}" CI=true
+        make orchestration_apply ENV="${_ENV}" CI=true
+        make governance_apply    ENV="${_ENV}" CI=true
+        make bi_apply            ENV="${_ENV}" CI=true
+        make cicd_apply          ENV="${_ENV}" CI=true
