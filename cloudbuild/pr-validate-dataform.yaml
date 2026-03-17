@@ -3,11 +3,33 @@ timeout: 1800s
 options:
   logging: CLOUD_LOGGING_ONLY
 
+substitutions:
+  _GITHUB_PAT_SECRET_NAME: "REQUIRED_FROM_TRIGGER"
+
+availableSecrets:
+  secretManager:
+    - versionName: "projects/${PROJECT_ID}/secrets/${_GITHUB_PAT_SECRET_NAME}/versions/latest"
+      env: GITHUB_PR_COMMENT_TOKEN
+
 steps:
-  # Minimum Dataform validation: compile the project from the repository root.
   - name: node:20-bookworm-slim
     entrypoint: bash
+    secretEnv:
+      - GITHUB_PR_COMMENT_TOKEN
+    env:
+      - PR_RESULT_DIR=/workspace/.cloudbuild/pr-validation/dataform
+      - CB_PROJECT_ID=${PROJECT_ID}
+      - CB_BUILD_ID=${BUILD_ID}
+      - CB_LOCATION=${LOCATION}
+      - CB_TRIGGER_NAME=${TRIGGER_NAME}
+      - CB_COMMIT_SHA=${COMMIT_SHA}
+      - CB_SHORT_SHA=${SHORT_SHA}
+      - CB_REPO_FULL_NAME=${REPO_FULL_NAME}
+      - CB_PR_NUMBER=${_PR_NUMBER}
     args:
       - -ceu
       - |
-        npx --yes --package=@dataform/cli@3.0.45 dataform compile .
+        ./cloudbuild/scripts/install_github_comment_tools.sh
+        ./cloudbuild/scripts/pr_validate_dataform.sh
+        ./cloudbuild/scripts/upsert_github_pr_comment.sh
+        ./cloudbuild/scripts/finalize_pr_validation_status.sh

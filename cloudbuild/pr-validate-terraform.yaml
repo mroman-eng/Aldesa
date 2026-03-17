@@ -4,11 +4,8 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 substitutions:
-  _ENV: dev
-  _COMPONENT_TARGET: foundation
-  _COMPONENT_DIR: 10-foundation
-  _TERRAFORM_VERSION: "1.14.4"
   _GITHUB_PAT_SECRET_NAME: "REQUIRED_FROM_TRIGGER"
+  _TERRAFORM_VERSION: "1.14.4"
 
 availableSecrets:
   secretManager:
@@ -16,13 +13,12 @@ availableSecrets:
       env: GITHUB_PR_COMMENT_TOKEN
 
 steps:
-  # Install Terraform and helper tools in the Cloud SDK image used to run make targets.
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: bash
     secretEnv:
       - GITHUB_PR_COMMENT_TOKEN
     env:
-      - PR_TF_RESULT_DIR=/workspace/.cloudbuild/pr-tf
+      - PR_RESULT_DIR=/workspace/.cloudbuild/pr-validation/terraform
       - CB_PROJECT_ID=${PROJECT_ID}
       - CB_BUILD_ID=${BUILD_ID}
       - CB_LOCATION=${LOCATION}
@@ -35,7 +31,6 @@ steps:
       - -ceu
       - |
         ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
-        ./cloudbuild/scripts/pr_validate_terraform_component.sh "${_COMPONENT_TARGET}" "${_COMPONENT_DIR}" "${_ENV}"
-        ./cloudbuild/scripts/render_github_pr_comment.sh
+        ./cloudbuild/scripts/pr_validate_terraform.sh
         ./cloudbuild/scripts/upsert_github_pr_comment.sh
         ./cloudbuild/scripts/finalize_pr_validation_status.sh

@@ -13,3 +13,6 @@ node_modules/
 # Python local artifacts
 **/__pycache__/
 **/*.py[cod]
+
+# Ruffle local artifacts
+**/.ruff_cache/

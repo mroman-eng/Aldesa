@@ -40,164 +40,33 @@ cloudbuild = {
     # PR validations (target branch: develop)
     {
       name                = "cb-pr-dev-python"
-      description         = "PR validation for Python files (dags + functions) targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-python.yaml"
-      service_account_ref = "terraform"
-      included_files = [
-        "dags/**",
-        "functions/**",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-dataform"
-      description         = "PR validation for Dataform definitions targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-dataform.yaml"
-      service_account_ref = "terraform"
-      included_files = [
-        "definitions/**",
-        "includes/**",
-        "tests/**",
-        "workflow_settings.yaml",
-        "package.json",
-        "package-lock.json",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-tf-foundation"
-      description         = "PR Terraform fmt/validate/plan for 10-foundation targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
-      service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "foundation"
-        _COMPONENT_DIR    = "10-foundation"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "terraform/modules/**",
-        "terraform/components/10-foundation/**",
-        "terraform/envs/dev/10-foundation/**",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-tf-storage-bq"
-      description         = "PR Terraform fmt/validate/plan for 20-storage-bq targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
-      service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "storage_bq"
-        _COMPONENT_DIR    = "20-storage-bq"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "terraform/modules/**",
-        "terraform/components/20-storage-bq/**",
-        "terraform/envs/dev/20-storage-bq/**",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-tf-orchestration"
-      description         = "PR Terraform fmt/validate/plan for 30-orchestration targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
-      service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "orchestration"
-        _COMPONENT_DIR    = "30-orchestration"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "terraform/modules/**",
-        "terraform/components/30-orchestration/**",
-        "terraform/envs/dev/30-orchestration/**",
-        "functions/**",
-        "composer/requirements.txt",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-tf-governance"
-      description         = "PR Terraform fmt/validate/plan for 40-governance targeting develop."
-      event               = "PULL_REQUEST"
-      disabled            = true
-      branch_regex        = "^develop$"
-      comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
-      service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "governance"
-        _COMPONENT_DIR    = "40-governance"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "terraform/modules/**",
-        "terraform/components/40-governance/**",
-        "terraform/envs/dev/40-governance/**",
-      ]
-    },
-    {
-      name                = "cb-pr-dev-tf-bi"
-      description         = "PR Terraform fmt/validate/plan for 50-bi targeting develop."
+      description         = "PR validation for Python files - Always-on"
       event               = "PULL_REQUEST"
       disabled            = false
       branch_regex        = "^develop$"
       comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
+      filename            = "cloudbuild/pr-validate-python.yaml"
       service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "bi"
-        _COMPONENT_DIR    = "50-bi"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "terraform/modules/**",
-        "terraform/components/50-bi/**",
-        "terraform/envs/dev/50-bi/**",
-      ]
     },
     {
-      name                = "cb-pr-dev-tf-cicd"
-      description         = "PR Terraform fmt/validate/plan for 60-cicd targeting develop."
+      name                = "cb-pr-dev-dataform"
+      description         = "PR validation for Dataform changes - Always-on"
       event               = "PULL_REQUEST"
-      disabled            = true
+      disabled            = false
       branch_regex        = "^develop$"
       comment_control     = "COMMENTS_DISABLED"
-      filename            = "cloudbuild/pr-validate-terraform-component.yaml"
+      filename            = "cloudbuild/pr-validate-dataform.yaml"
       service_account_ref = "terraform"
-      substitutions = {
-        _COMPONENT_TARGET = "cicd"
-        _COMPONENT_DIR    = "60-cicd"
-      }
-      included_files = [
-        "Makefile",
-        "mk/**",
-        "cloudbuild/**",
-        "terraform/modules/**",
-        "terraform/components/60-cicd/**",
-        "terraform/envs/dev/60-cicd/**",
-      ]
+    },
+    {
+      name                = "cb-pr-dev-terraform"
+      description         = "PR validation for Terraform changes - Always-on"
+      event               = "PULL_REQUEST"
+      disabled            = false
+      branch_regex        = "^develop$"
+      comment_control     = "COMMENTS_DISABLED"
+      filename            = "cloudbuild/pr-validate-terraform.yaml"
+      service_account_ref = "terraform"
     },
 
     # Push to develop (deploy DEV with a single ordered Terraform pipeline)
