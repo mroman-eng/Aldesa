@@ -24,6 +24,7 @@ cloudbuild = {
   enabled                                                      = true
   trigger_location                                             = "europe-southwest1"
   repository_resource_name                                     = "projects/data-buildtrack-dev/locations/europe-southwest1/connections/github-data-build-track/repositories/GrupoAldesa-build-track-gcp-dataops"
+  github_pat_secret_name                                       = "sec-aldesa-buildtrack-dev-dataform-github-pat"
   grant_cloudbuild_service_agent_impersonation_on_terraform_sa = true
   grant_logging_log_writer_on_terraform_sa                     = true
 
@@ -159,7 +160,7 @@ cloudbuild = {
       name                = "cb-pr-dev-tf-bi"
       description         = "PR Terraform fmt/validate/plan for 50-bi targeting develop."
       event               = "PULL_REQUEST"
-      disabled            = true
+      disabled            = false
       branch_regex        = "^develop$"
       comment_control     = "COMMENTS_DISABLED"
       filename            = "cloudbuild/pr-validate-terraform-component.yaml"
@@ -200,18 +201,6 @@ cloudbuild = {
     },
 
     # Push to develop (deploy DEV with a single ordered Terraform pipeline)
-    {
-      name                = "cb-dev-smoke-hello"
-      description         = "Smoke test trigger to verify Cloud Build can resolve and run the connected GitHub repository."
-      event               = "PUSH"
-      disabled            = true
-      branch_regex        = "^develop$"
-      filename            = "cloudbuild/mock-hello.yaml"
-      service_account_ref = "terraform"
-      included_files = [
-        "cloudbuild/mock-hello.yaml",
-      ]
-    },
     {
       name                = "cb-dev-tf-apply-ordered"
       description         = "Apply Terraform components in dependency order in DEV on push to develop."

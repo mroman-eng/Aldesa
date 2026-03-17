@@ -11,6 +11,7 @@ locals {
   cloudbuild_default_trigger_disabled           = coalesce(try(var.cloudbuild.default_trigger_disabled, null), false)
   cloudbuild_grant_tf_sa_impersonation          = coalesce(try(var.cloudbuild.grant_cloudbuild_service_agent_impersonation_on_terraform_sa, null), true)
   cloudbuild_grant_tf_sa_logging_writer         = coalesce(try(var.cloudbuild.grant_logging_log_writer_on_terraform_sa, null), true)
+  cloudbuild_github_pat_secret_name             = try(var.cloudbuild.github_pat_secret_name, null)
   cloudbuild_service_agent_email                = "service-${data.google_project.current.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
   cloudbuild_service_agent_member               = "serviceAccount:${local.cloudbuild_service_agent_email}"
   dags_sync_pipeline_enabled                    = local.cloudbuild_enabled && coalesce(try(var.cloudbuild.dags_sync_pipeline.enabled, null), true)
@@ -46,9 +47,10 @@ locals {
         ignored_files    = distinct(compact(try(raw.ignored_files, null) == null ? [] : raw.ignored_files))
         substitutions = merge(
           {
-            _ENV         = var.environment
-            _PROJECT_ID  = var.project_id
-            _DAGS_BUCKET = var.dags_bucket_name
+            _ENV                    = var.environment
+            _PROJECT_ID             = var.project_id
+            _DAGS_BUCKET            = var.dags_bucket_name
+            _GITHUB_PAT_SECRET_NAME = coalesce(local.cloudbuild_github_pat_secret_name, "")
           },
           (try(raw.substitutions, null) == null ? {} : raw.substitutions)
         )
@@ -188,6 +190,20 @@ resource "google_project_iam_member" "terraform_trigger_logging_writer" {
   member  = "serviceAccount:${var.terraform_service_account_email}"
 }
 
+# Allow the Terraform trigger service account to read the shared GitHub PAT secret.
+resource "google_secret_manager_secret_iam_member" "terraform_trigger_github_pat_accessor" {
+  count = (
+    local.cloudbuild_enabled &&
+    local.cloudbuild_github_pat_secret_name != null &&
+    length(trimspace(local.cloudbuild_github_pat_secret_name)) > 0
+  ) ? 1 : 0
+
+  project   = var.project_id
+  secret_id = local.cloudbuild_github_pat_secret_name
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.terraform_service_account_email}"
+}
+
 # Allow the Cloud Build service agent to impersonate the Terraform deployer service account.
 resource "google_service_account_iam_member" "cloudbuild_service_agent_impersonates_terraform" {
   count = local.cloudbuild_enabled && local.cloudbuild_grant_tf_sa_impersonation ? 1 : 0
@@ -267,6 +283,7 @@ resource "google_cloudbuild_trigger" "this" {
 
   depends_on = [
     google_project_iam_member.terraform_trigger_logging_writer,
+    google_secret_manager_secret_iam_member.terraform_trigger_github_pat_accessor,
     google_project_iam_member.dags_sync_pipeline_logging_writer,
     google_service_account_iam_member.cloudbuild_service_agent_impersonates_terraform,
     google_service_account_iam_member.cloudbuild_service_agent_impersonates_dags_sync,

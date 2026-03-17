@@ -54,6 +54,7 @@ variable "cloudbuild" {
     default_trigger_disabled                                     = optional(bool)
     grant_cloudbuild_service_agent_impersonation_on_terraform_sa = optional(bool)
     grant_logging_log_writer_on_terraform_sa                     = optional(bool)
+    github_pat_secret_name                                       = optional(string)
     dags_sync_pipeline = optional(object({
       enabled                    = optional(bool)
       service_account_id         = optional(string)
