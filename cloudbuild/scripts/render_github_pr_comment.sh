@@ -7,6 +7,7 @@ FULL_SECTION_FILE="${RESULT_DIR}/section.full.md"
 TRUNCATED_SECTION_FILE="${RESULT_DIR}/section.truncated.md"
 COMPACT_SECTION_FILE="${RESULT_DIR}/section.compact.md"
 PLAN_RENDER_FILE="${RESULT_DIR}/plan.txt"
+SANITIZED_PAYLOAD_FILE="${RESULT_DIR}/payload.sanitized.txt"
 
 if [ ! -f "${RESULT_ENV_FILE}" ]; then
   echo "Result file not found: ${RESULT_ENV_FILE}" >&2
@@ -44,6 +45,31 @@ else
   payload_fence="text"
 fi
 
+sanitize_payload() {
+  local source_file="$1"
+  local destination_file="$2"
+  local stripped_file
+
+  stripped_file="$(mktemp)"
+
+  sed -E $'s/\x1B\\[[0-9;?]*[ -/]*[@-~]//g' "${source_file}" >"${stripped_file}"
+
+  if [[ "${payload_source}" == "${PLAN_RENDER_FILE}" || "${payload_source}" == */PLAN.log ]] && grep -Eq '^Terraform (will perform the following actions:|planned the following actions, but then encountered a problem:)$' "${stripped_file}"; then
+    awk '
+      found || /^Terraform will perform the following actions:$/ || /^Terraform planned the following actions, but then encountered a problem:$/ {
+        found = 1
+        print
+      }
+    ' "${stripped_file}" >"${destination_file}"
+  else
+    cp "${stripped_file}" "${destination_file}"
+  fi
+
+  rm -f "${stripped_file}"
+}
+
+sanitize_payload "${payload_source}" "${SANITIZED_PAYLOAD_FILE}"
+
 write_section() {
   local destination="$1"
   local payload_mode="$2"
@@ -72,7 +98,7 @@ write_section() {
         printf '<details>\n'
         printf '<summary>%s</summary>\n\n' "${payload_label}"
         printf '```%s\n' "${payload_fence}"
-        cat "${payload_source}"
+        cat "${SANITIZED_PAYLOAD_FILE}"
         printf '\n```\n\n'
         printf '</details>\n'
         printf '%s\n' "${payload_marker_end}"
@@ -82,7 +108,7 @@ write_section() {
         printf '<details>\n'
         printf '<summary>%s (truncated)</summary>\n\n' "${payload_label}"
         printf '```%s\n' "${payload_fence}"
-        head -c "${payload_limit}" "${payload_source}"
+        head -c "${payload_limit}" "${SANITIZED_PAYLOAD_FILE}"
         printf '\n...\n```\n\n'
         printf '</details>\n'
         printf '%s\n\n' "${payload_marker_end}"

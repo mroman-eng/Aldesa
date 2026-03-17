@@ -75,7 +75,8 @@ fi
 if [ "${PLAN_STATUS}" = "SUCCESS" ]; then
   mapfile -t plan_files < <(find "${ENV_DIR}" -maxdepth 1 -type f -name '*.tfplan' | sort)
   if [ "${#plan_files[@]}" -eq 1 ]; then
-    if ! terraform show -no-color "${plan_files[0]}" >"${PLAN_RENDER_FILE}"; then
+    plan_file_name="$(basename "${plan_files[0]}")"
+    if ! terraform -chdir="${ENV_DIR}" show -no-color "${plan_file_name}" >"${PLAN_RENDER_FILE}"; then
       PLAN_STATUS="FAILED"
       OVERALL_STATUS="FAILED"
       echo "Failed to render Terraform plan file ${plan_files[0]}." | tee -a "${LOG_DIR}/PLAN.log"
