@@ -20,6 +20,7 @@ looker_studio = {
     "vanessa.moyano.ext@aldesa.es",
     "maypher.roman.ext@aldesa.es",
     "jorge.gonzalezd.ext@aldesa.es",
+    "sergio.ibanez.ext@aldesa.es",
   ]
   grant_bigquery_job_user        = true
   grant_gold_dataset_data_viewer = true
