@@ -8,7 +8,7 @@
     "type": "STRING"
   },
   {
-    "name": "PSPID",
+    "name": "POSID",
     "type": "STRING"
   },
   {
@@ -20,12 +20,20 @@
     "type": "STRING"
   },
   {
+    "name": "PSPHI",
+    "type": "INTEGER"
+  },
+  {
+    "name": "POSKI",
+    "type": "STRING"
+  },
+  {
     "name": "ERNAM",
     "type": "STRING"
   },
   {
     "name": "ERDAT",
-    "type": "DATE"
+    "type": "DATETIME"
   },
   {
     "name": "AENAM",
@@ -33,23 +41,7 @@
   },
   {
     "name": "AEDAT",
-    "type": "DATE"
-  },
-  {
-    "name": "KIMSK",
-    "type": "FLOAT"
-  },
-  {
-    "name": "AUTOD",
-    "type": "FLOAT"
-  },
-  {
-    "name": "STSPD",
-    "type": "STRING"
-  },
-  {
-    "name": "STSPR",
-    "type": "STRING"
+    "type": "DATETIME"
   },
   {
     "name": "VERNR",
@@ -68,15 +60,15 @@
     "type": "STRING"
   },
   {
-    "name": "VBUKR",
+    "name": "PBUKR",
     "type": "STRING"
   },
   {
-    "name": "VGSBR",
+    "name": "PGSBR",
     "type": "FLOAT"
   },
   {
-    "name": "VKOKR",
+    "name": "PKOKR",
     "type": "INTEGER"
   },
   {
@@ -84,8 +76,28 @@
     "type": "STRING"
   },
   {
-    "name": "PWHIE",
+    "name": "PRART",
     "type": "STRING"
+  },
+  {
+    "name": "STUFE",
+    "type": "INTEGER"
+  },
+  {
+    "name": "PLAKZ",
+    "type": "STRING"
+  },
+  {
+    "name": "BELKZ",
+    "type": "STRING"
+  },
+  {
+    "name": "FAKKZ",
+    "type": "STRING"
+  },
+  {
+    "name": "NPFAZ",
+    "type": "FLOAT"
   },
   {
     "name": "ZUORD",
@@ -96,123 +108,19 @@
     "type": "FLOAT"
   },
   {
-    "name": "PLFAZ",
-    "type": "DATE"
-  },
-  {
-    "name": "PLSEZ",
-    "type": "DATE"
-  },
-  {
-    "name": "WERKS",
+    "name": "KVEWE",
     "type": "STRING"
   },
   {
-    "name": "KALID",
+    "name": "KAPPL",
     "type": "STRING"
   },
   {
-    "name": "VGPLF",
-    "type": "INTEGER"
-  },
-  {
-    "name": "EWPLF",
-    "type": "INTEGER"
-  },
-  {
-    "name": "ZTEHT",
-    "type": "STRING"
-  },
-  {
-    "name": "NZANZ",
+    "name": "KALSM",
     "type": "FLOAT"
   },
   {
-    "name": "PLNAW",
-    "type": "STRING"
-  },
-  {
-    "name": "VPROF",
-    "type": "FLOAT"
-  },
-  {
-    "name": "PROFL",
-    "type": "STRING"
-  },
-  {
-    "name": "BPROF",
-    "type": "STRING"
-  },
-  {
-    "name": "TXTSP",
-    "type": "STRING"
-  },
-  {
-    "name": "KOSTL",
-    "type": "FLOAT"
-  },
-  {
-    "name": "KTRG",
-    "type": "FLOAT"
-  },
-  {
-    "name": "AEDTE",
-    "type": "FLOAT"
-  },
-  {
-    "name": "AEDTP",
-    "type": "FLOAT"
-  },
-  {
-    "name": "BERST",
-    "type": "FLOAT"
-  },
-  {
-    "name": "BERTR",
-    "type": "FLOAT"
-  },
-  {
-    "name": "BERKO",
-    "type": "FLOAT"
-  },
-  {
-    "name": "BERBU",
-    "type": "FLOAT"
-  },
-  {
-    "name": "SPSNR",
-    "type": "INTEGER"
-  },
-  {
-    "name": "BESTA",
-    "type": "STRING"
-  },
-  {
-    "name": "SCOPE",
-    "type": "STRING"
-  },
-  {
-    "name": "XSTAT",
-    "type": "FLOAT"
-  },
-  {
-    "name": "TXJCD",
-    "type": "FLOAT"
-  },
-  {
-    "name": "ZSCHM",
-    "type": "FLOAT"
-  },
-  {
-    "name": "SCPRF",
-    "type": "STRING"
-  },
-  {
-    "name": "IMPRF",
-    "type": "FLOAT"
-  },
-  {
-    "name": "FMPRF",
+    "name": "ZSCHL",
     "type": "FLOAT"
   },
   {
@@ -220,132 +128,48 @@
     "type": "FLOAT"
   },
   {
-    "name": "POSTU",
-    "type": "STRING"
-  },
-  {
-    "name": "PPROF",
-    "type": "STRING"
-  },
-  {
-    "name": "PLINT",
-    "type": "FLOAT"
-  },
-  {
-    "name": "LOEVM",
-    "type": "FLOAT"
-  },
-  {
-    "name": "INACT",
-    "type": "FLOAT"
-  },
-  {
-    "name": "KZBWS",
-    "type": "FLOAT"
-  },
-  {
-    "name": "SMPRF",
-    "type": "FLOAT"
-  },
-  {
-    "name": "FLGVRG",
+    "name": "AKOKR",
     "type": "INTEGER"
   },
   {
-    "name": "GRTOP",
-    "type": "FLOAT"
-  },
-  {
-    "name": "PGPRF",
-    "type": "FLOAT"
-  },
-  {
-    "name": "STORT",
+    "name": "AKSTL",
     "type": "STRING"
   },
   {
-    "name": "LOGSYSTEM",
-    "type": "FLOAT"
-  },
-  {
-    "name": "KZERB",
-    "type": "STRING"
-  },
-  {
-    "name": "PARGR",
-    "type": "STRING"
-  },
-  {
-    "name": "FUNC_AREA",
-    "type": "FLOAT"
-  },
-  {
-    "name": "VKORG",
-    "type": "FLOAT"
-  },
-  {
-    "name": "VTWEG",
-    "type": "FLOAT"
-  },
-  {
-    "name": "SPART",
-    "type": "FLOAT"
-  },
-  {
-    "name": "DPPPROF",
-    "type": "FLOAT"
-  },
-  {
-    "name": "VPKSTU",
+    "name": "FKOKR",
     "type": "INTEGER"
   },
   {
-    "name": "PSPID_EDIT",
+    "name": "FKSTL",
     "type": "STRING"
   },
   {
-    "name": "VNAME",
-    "type": "FLOAT"
-  },
-  {
-    "name": "RECID",
-    "type": "FLOAT"
-  },
-  {
-    "name": "ETYPE",
-    "type": "FLOAT"
-  },
-  {
-    "name": "OTYPE",
-    "type": "FLOAT"
-  },
-  {
-    "name": "JIBCL",
-    "type": "FLOAT"
-  },
-  {
-    "name": "JIBSA",
-    "type": "FLOAT"
-  },
-  {
-    "name": "ZZCEBE",
+    "name": "FABKL",
     "type": "STRING"
   },
   {
-    "name": "ZZSAKNR",
+    "name": "PSPRI",
+    "type": "STRING"
+  },
+  {
+    "name": "EQUNR",
     "type": "FLOAT"
   },
   {
-    "name": "SCHTYP",
+    "name": "TPLNR",
     "type": "FLOAT"
   },
   {
-    "name": "SPROG",
-    "type": "FLOAT"
+    "name": "PWPOS",
+    "type": "STRING"
   },
   {
-    "name": "EPROG",
-    "type": "FLOAT"
+    "name": "WERKS",
+    "type": "STRING"
+  },
+  {
+    "name": "TXTSP",
+    "type": "STRING"
   },
   {
     "name": "SLWID",
@@ -353,7 +177,7 @@
   },
   {
     "name": "USR00",
-    "type": "FLOAT"
+    "type": "STRING"
   },
   {
     "name": "USR01",
@@ -414,6 +238,242 @@
   {
     "name": "USR11",
     "type": "FLOAT"
+  },
+  {
+    "name": "KOSTL",
+    "type": "FLOAT"
+  },
+  {
+    "name": "KTRG",
+    "type": "FLOAT"
+  },
+  {
+    "name": "BERST",
+    "type": "FLOAT"
+  },
+  {
+    "name": "BERTR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "BERKO",
+    "type": "FLOAT"
+  },
+  {
+    "name": "BERBU",
+    "type": "FLOAT"
+  },
+  {
+    "name": "CLASF",
+    "type": "STRING"
+  },
+  {
+    "name": "SPSNR",
+    "type": "INTEGER"
+  },
+  {
+    "name": "SCOPE",
+    "type": "STRING"
+  },
+  {
+    "name": "XSTAT",
+    "type": "FLOAT"
+  },
+  {
+    "name": "TXJCD",
+    "type": "FLOAT"
+  },
+  {
+    "name": "ZSCHM",
+    "type": "FLOAT"
+  },
+  {
+    "name": "IMPRF",
+    "type": "FLOAT"
+  },
+  {
+    "name": "EVGEW",
+    "type": "INTEGER"
+  },
+  {
+    "name": "AENNR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "SUBPR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "POSTU",
+    "type": "STRING"
+  },
+  {
+    "name": "PLINT",
+    "type": "FLOAT"
+  },
+  {
+    "name": "LOEVM",
+    "type": "STRING"
+  },
+  {
+    "name": "KZBWS",
+    "type": "FLOAT"
+  },
+  {
+    "name": "FPLNR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "TADAT",
+    "type": "FLOAT"
+  },
+  {
+    "name": "IZWEK",
+    "type": "FLOAT"
+  },
+  {
+    "name": "ISIZE",
+    "type": "FLOAT"
+  },
+  {
+    "name": "IUMKZ",
+    "type": "FLOAT"
+  },
+  {
+    "name": "ABUKR",
+    "type": "STRING"
+  },
+  {
+    "name": "GRPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "name": "PGPRF",
+    "type": "FLOAT"
+  },
+  {
+    "name": "LOGSYSTEM",
+    "type": "FLOAT"
+  },
+  {
+    "name": "PSPNR_LOGS",
+    "type": "INTEGER"
+  },
+  {
+    "name": "STORT",
+    "type": "STRING"
+  },
+  {
+    "name": "FUNC_AREA",
+    "type": "FLOAT"
+  },
+  {
+    "name": "KLVAR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "KALNR",
+    "type": "INTEGER"
+  },
+  {
+    "name": "POSID_EDIT",
+    "type": "STRING"
+  },
+  {
+    "name": "PSPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "name": "MATNR",
+    "type": "FLOAT"
+  },
+  {
+    "name": "VLPSP",
+    "type": "INTEGER"
+  },
+  {
+    "name": "VLPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "name": "SORT1",
+    "type": "FLOAT"
+  },
+  {
+    "name": "SORT2",
+    "type": "FLOAT"
+  },
+  {
+    "name": "SORT3",
+    "type": "FLOAT"
+  },
+  {
+    "name": "VNAME",
+    "type": "FLOAT"
+  },
+  {
+    "name": "RECID",
+    "type": "FLOAT"
+  },
+  {
+    "name": "ETYPE",
+    "type": "FLOAT"
+  },
+  {
+    "name": "OTYPE",
+    "type": "FLOAT"
+  },
+  {
+    "name": "JIBCL",
+    "type": "FLOAT"
+  },
+  {
+    "name": "JIBSA",
+    "type": "FLOAT"
+  },
+  {
+    "name": "CGPL_GUID16",
+    "type": "INTEGER"
+  },
+  {
+    "name": "CGPL_LOGSYS",
+    "type": "FLOAT"
+  },
+  {
+    "name": "CGPL_OBJTYPE",
+    "type": "FLOAT"
+  },
+  {
+    "name": "ADPSP",
+    "type": "FLOAT"
+  },
+  {
+    "name": "RFIPPNT",
+    "type": "FLOAT"
+  },
+  {
+    "name": "PARTIDA",
+    "type": "STRING"
+  },
+  {
+    "name": "RELEV",
+    "type": "FLOAT"
+  },
+  {
+    "name": "RELEVLP",
+    "type": "STRING"
+  },
+  {
+    "name": "IVA",
+    "type": "INTEGER"
+  },
+  {
+    "name": "DEC",
+    "type": "FLOAT"
+  },
+  {
+    "name": "RET",
+    "type": "INTEGER"
   },
   {
     "name": "FERC_IND",

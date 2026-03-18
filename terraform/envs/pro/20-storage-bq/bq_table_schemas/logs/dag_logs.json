@@ -26,7 +26,12 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "file",
+    "name": "file_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "batch_id",
     "type": "STRING"
   }
 ]

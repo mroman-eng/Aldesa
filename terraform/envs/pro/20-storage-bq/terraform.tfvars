@@ -23,27 +23,42 @@ bigquery_location_override = "europe-west1"
 
 raw_tables = {
   proj = {}
-  peps = {}
-  bkps = {}
-  vibe = {}
+  prps = {}
 }
 
 bronze_tables = {
-  proj = {}
-  peps = {}
-  bkps = {}
+  proj = {
+    description = "Carga INCREMENTAL de PROJ. Acumula los deltas de SAP."
+    time_partitioning = {
+      type  = "DAY"
+      field = "ingestion_timestamp_bronze"
+    }
+    clustering_fields = ["PSPNR"]
+  }
+  prps = {
+    description = "Carga INCREMENTAL de PRPS. Acumula los deltas de SAP."
+    time_partitioning = {
+      type  = "DAY"
+      field = "ingestion_timestamp_bronze"
+    }
+    clustering_fields = ["PSPNR"]
+  }
 }
 
 silver_tables = {
-  proj = {}
-  peps = {}
-  bkps = {}
+  proj = {
+    description = "Carga INCREMENTAL de PROJ con nombres de campo legibles y reglas de calidad aplicadas."
+    time_partitioning = {
+      type  = "DAY"
+      field = "ingestion_timestamp_silver"
+    }
+    clustering_fields = ["PSPNR"]
+  }
 }
 
 gold_tables = {
   proj = {}
   peps = {}
-  bkps = {}
 }
 
 alerts_tables = {

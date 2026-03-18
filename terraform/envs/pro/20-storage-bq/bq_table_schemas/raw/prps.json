@@ -11,7 +11,7 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "PSPID",
+    "name": "POSID",
     "type": "STRING"
   },
   {
@@ -26,13 +26,23 @@
   },
   {
     "mode": "NULLABLE",
+    "name": "PSPHI",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "POSKI",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
     "name": "ERNAM",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
     "name": "ERDAT",
-    "type": "DATE"
+    "type": "DATETIME"
   },
   {
     "mode": "NULLABLE",
@@ -42,27 +52,7 @@
   {
     "mode": "NULLABLE",
     "name": "AEDAT",
-    "type": "DATE"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "KIMSK",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "AUTOD",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "STSPD",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "STSPR",
-    "type": "STRING"
+    "type": "DATETIME"
   },
   {
     "mode": "NULLABLE",
@@ -86,17 +76,17 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "VBUKR",
+    "name": "PBUKR",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "VGSBR",
+    "name": "PGSBR",
     "type": "FLOAT"
   },
   {
     "mode": "NULLABLE",
-    "name": "VKOKR",
+    "name": "PKOKR",
     "type": "INTEGER"
   },
   {
@@ -106,8 +96,33 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "PWHIE",
+    "name": "PRART",
     "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "STUFE",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PLAKZ",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BELKZ",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FAKKZ",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "NPFAZ",
+    "type": "FLOAT"
   },
   {
     "mode": "NULLABLE",
@@ -121,152 +136,22 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "PLFAZ",
-    "type": "DATE"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PLSEZ",
-    "type": "DATE"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "WERKS",
+    "name": "KVEWE",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "KALID",
+    "name": "KAPPL",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "VGPLF",
-    "type": "INTEGER"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "EWPLF",
-    "type": "INTEGER"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "ZTEHT",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "NZANZ",
+    "name": "KALSM",
     "type": "FLOAT"
   },
   {
     "mode": "NULLABLE",
-    "name": "PLNAW",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "VPROF",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PROFL",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BPROF",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "TXTSP",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "KOSTL",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "KTRG",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "AEDTE",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "AEDTP",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BERST",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BERTR",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BERKO",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BERBU",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "SPSNR",
-    "type": "INTEGER"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "BESTA",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "SCOPE",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "XSTAT",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "TXJCD",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "ZSCHM",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "SCPRF",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "IMPRF",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "FMPRF",
+    "name": "ZSCHL",
     "type": "FLOAT"
   },
   {
@@ -276,163 +161,58 @@
   },
   {
     "mode": "NULLABLE",
-    "name": "POSTU",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PPROF",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PLINT",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "LOEVM",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "INACT",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "KZBWS",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "SMPRF",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "FLGVRG",
+    "name": "AKOKR",
     "type": "INTEGER"
   },
   {
     "mode": "NULLABLE",
-    "name": "GRTOP",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PGPRF",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "STORT",
+    "name": "AKSTL",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "LOGSYSTEM",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "KZERB",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "PARGR",
-    "type": "STRING"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "FUNC_AREA",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "VKORG",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "VTWEG",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "SPART",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "DPPPROF",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "VPKSTU",
+    "name": "FKOKR",
     "type": "INTEGER"
   },
   {
     "mode": "NULLABLE",
-    "name": "PSPID_EDIT",
+    "name": "FKSTL",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "VNAME",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "RECID",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "ETYPE",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "OTYPE",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "JIBCL",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "JIBSA",
-    "type": "FLOAT"
-  },
-  {
-    "mode": "NULLABLE",
-    "name": "ZZCEBE",
+    "name": "FABKL",
     "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "ZZSAKNR",
+    "name": "PSPRI",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "EQUNR",
     "type": "FLOAT"
   },
   {
     "mode": "NULLABLE",
-    "name": "SCHTYP",
+    "name": "TPLNR",
     "type": "FLOAT"
   },
   {
     "mode": "NULLABLE",
-    "name": "SPROG",
-    "type": "FLOAT"
+    "name": "PWPOS",
+    "type": "STRING"
   },
   {
     "mode": "NULLABLE",
-    "name": "EPROG",
-    "type": "FLOAT"
+    "name": "WERKS",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TXTSP",
+    "type": "STRING"
   },
   {
     "mode": "NULLABLE",
@@ -442,7 +222,7 @@
   {
     "mode": "NULLABLE",
     "name": "USR00",
-    "type": "FLOAT"
+    "type": "STRING"
   },
   {
     "mode": "NULLABLE",
@@ -518,6 +298,301 @@
     "mode": "NULLABLE",
     "name": "USR11",
     "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "KOSTL",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "KTRG",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BERST",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BERTR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BERKO",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BERBU",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "CLASF",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SPSNR",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SCOPE",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "XSTAT",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TXJCD",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ZSCHM",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "IMPRF",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "EVGEW",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "AENNR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SUBPR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "POSTU",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PLINT",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LOEVM",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "KZBWS",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FPLNR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TADAT",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "IZWEK",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ISIZE",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "IUMKZ",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ABUKR",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "GRPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PGPRF",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LOGSYSTEM",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PSPNR_LOGS",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "STORT",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FUNC_AREA",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "KLVAR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "KALNR",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "POSID_EDIT",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PSPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MATNR",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "VLPSP",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "VLPKZ",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SORT1",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SORT2",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SORT3",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "VNAME",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RECID",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ETYPE",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "OTYPE",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "JIBCL",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "JIBSA",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "CGPL_GUID16",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "CGPL_LOGSYS",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "CGPL_OBJTYPE",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ADPSP",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RFIPPNT",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PARTIDA",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RELEV",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RELEVLP",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "IVA",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "DEC",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RET",
+    "type": "INTEGER"
   },
   {
     "mode": "NULLABLE",

@@ -1,8 +1,462 @@
 [
   {
-    "name": "placeholder_col",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Placeholder column"
+    "name": "MANDT",
+    "type": "STRING"
+  },
+  {
+    "name": "PSPNR",
+    "type": "STRING"
+  },
+  {
+    "name": "PSPID",
+    "type": "STRING"
+  },
+  {
+    "name": "PSPID_EDIT",
+    "type": "STRING"
+  },
+  {
+    "name": "POST1",
+    "type": "STRING"
+  },
+  {
+    "name": "OBJNR",
+    "type": "STRING"
+  },
+  {
+    "name": "VGSBR",
+    "type": "STRING"
+  },
+  {
+    "name": "VBUKR",
+    "type": "STRING"
+  },
+  {
+    "name": "WERKS",
+    "type": "STRING"
+  },
+  {
+    "name": "VKOKR",
+    "type": "STRING"
+  },
+  {
+    "name": "PRCTR",
+    "type": "STRING"
+  },
+  {
+    "name": "KOSTL",
+    "type": "STRING"
+  },
+  {
+    "name": "KTRG",
+    "type": "STRING"
+  },
+  {
+    "name": "FUNC_AREA",
+    "type": "STRING"
+  },
+  {
+    "name": "TXJCD",
+    "type": "STRING"
+  },
+  {
+    "name": "VERNR",
+    "type": "STRING"
+  },
+  {
+    "name": "VERNA",
+    "type": "STRING"
+  },
+  {
+    "name": "ASTNR",
+    "type": "STRING"
+  },
+  {
+    "name": "ASTNA",
+    "type": "STRING"
+  },
+  {
+    "name": "VNAME",
+    "type": "STRING"
+  },
+  {
+    "name": "ERNAM",
+    "type": "STRING"
+  },
+  {
+    "name": "AENAM",
+    "type": "STRING"
+  },
+  {
+    "name": "ERDAT",
+    "type": "DATE"
+  },
+  {
+    "name": "AEDAT",
+    "type": "DATE"
+  },
+  {
+    "name": "PLFAZ",
+    "type": "DATE"
+  },
+  {
+    "name": "PLSEZ",
+    "type": "DATE"
+  },
+  {
+    "name": "AEDTE",
+    "type": "DATE"
+  },
+  {
+    "name": "AUTOD",
+    "type": "DATE"
+  },
+  {
+    "name": "STSPD",
+    "type": "STRING"
+  },
+  {
+    "name": "STSPR",
+    "type": "STRING"
+  },
+  {
+    "name": "KIMSK",
+    "type": "STRING"
+  },
+  {
+    "name": "XSTAT",
+    "type": "STRING"
+  },
+  {
+    "name": "BESTA",
+    "type": "STRING"
+  },
+  {
+    "name": "SCOPE",
+    "type": "STRING"
+  },
+  {
+    "name": "AEDTP",
+    "type": "STRING"
+  },
+  {
+    "name": "LOEVM",
+    "type": "FLOAT"
+  },
+  {
+    "name": "INACT",
+    "type": "FLOAT"
+  },
+  {
+    "name": "PWHIE",
+    "type": "STRING"
+  },
+  {
+    "name": "ZUORD",
+    "type": "STRING"
+  },
+  {
+    "name": "TRMEQ",
+    "type": "STRING"
+  },
+  {
+    "name": "VGPLF",
+    "type": "STRING"
+  },
+  {
+    "name": "EWPLF",
+    "type": "STRING"
+  },
+  {
+    "name": "VPROF",
+    "type": "STRING"
+  },
+  {
+    "name": "PROFL",
+    "type": "STRING"
+  },
+  {
+    "name": "BPROF",
+    "type": "STRING"
+  },
+  {
+    "name": "SMPRF",
+    "type": "STRING"
+  },
+  {
+    "name": "PGPRF",
+    "type": "STRING"
+  },
+  {
+    "name": "PPROF",
+    "type": "STRING"
+  },
+  {
+    "name": "SCPRF",
+    "type": "STRING"
+  },
+  {
+    "name": "IMPRF",
+    "type": "STRING"
+  },
+  {
+    "name": "FMPRF",
+    "type": "STRING"
+  },
+  {
+    "name": "KALID",
+    "type": "STRING"
+  },
+  {
+    "name": "PLINT",
+    "type": "STRING"
+  },
+  {
+    "name": "ABGSL",
+    "type": "STRING"
+  },
+  {
+    "name": "POSTU",
+    "type": "STRING"
+  },
+  {
+    "name": "ZTEHT",
+    "type": "INTEGER"
+  },
+  {
+    "name": "NZANZ",
+    "type": "INTEGER"
+  },
+  {
+    "name": "PLNAW",
+    "type": "INTEGER"
+  },
+  {
+    "name": "SPSNR",
+    "type": "STRING"
+  },
+  {
+    "name": "VKORG",
+    "type": "STRING"
+  },
+  {
+    "name": "VTWEG",
+    "type": "STRING"
+  },
+  {
+    "name": "SPART",
+    "type": "STRING"
+  },
+  {
+    "name": "STORT",
+    "type": "STRING"
+  },
+  {
+    "name": "LOGSYSTEM",
+    "type": "STRING"
+  },
+  {
+    "name": "KZERB",
+    "type": "STRING"
+  },
+  {
+    "name": "PARGR",
+    "type": "STRING"
+  },
+  {
+    "name": "JIBCL",
+    "type": "STRING"
+  },
+  {
+    "name": "JIBSA",
+    "type": "STRING"
+  },
+  {
+    "name": "ZSCHM",
+    "type": "STRING"
+  },
+  {
+    "name": "FLGVRG",
+    "type": "STRING"
+  },
+  {
+    "name": "GRTOP",
+    "type": "STRING"
+  },
+  {
+    "name": "BERST",
+    "type": "STRING"
+  },
+  {
+    "name": "BERTR",
+    "type": "STRING"
+  },
+  {
+    "name": "BERKO",
+    "type": "STRING"
+  },
+  {
+    "name": "BERBU",
+    "type": "STRING"
+  },
+  {
+    "name": "FERC_IND",
+    "type": "STRING"
+  },
+  {
+    "name": "KZBWS",
+    "type": "STRING"
+  },
+  {
+    "name": "RECID",
+    "type": "STRING"
+  },
+  {
+    "name": "ETYPE",
+    "type": "STRING"
+  },
+  {
+    "name": "OTYPE",
+    "type": "STRING"
+  },
+  {
+    "name": "TXTSP",
+    "type": "STRING"
+  },
+  {
+    "name": "VPKSTU",
+    "type": "STRING"
+  },
+  {
+    "name": "DPPPROF",
+    "type": "STRING"
+  },
+  {
+    "name": "SPROG",
+    "type": "STRING"
+  },
+  {
+    "name": "EPROG",
+    "type": "STRING"
+  },
+  {
+    "name": "SLWID",
+    "type": "STRING"
+  },
+  {
+    "name": "USR00",
+    "type": "STRING"
+  },
+  {
+    "name": "USR01",
+    "type": "STRING"
+  },
+  {
+    "name": "USR02",
+    "type": "STRING"
+  },
+  {
+    "name": "USR03",
+    "type": "STRING"
+  },
+  {
+    "name": "USR04",
+    "type": "STRING"
+  },
+  {
+    "name": "USE04",
+    "type": "STRING"
+  },
+  {
+    "name": "USR05",
+    "type": "STRING"
+  },
+  {
+    "name": "USE05",
+    "type": "STRING"
+  },
+  {
+    "name": "USR06",
+    "type": "STRING"
+  },
+  {
+    "name": "USE06",
+    "type": "STRING"
+  },
+  {
+    "name": "USR07",
+    "type": "STRING"
+  },
+  {
+    "name": "USE07",
+    "type": "STRING"
+  },
+  {
+    "name": "USR08",
+    "type": "STRING"
+  },
+  {
+    "name": "USR09",
+    "type": "STRING"
+  },
+  {
+    "name": "USR10",
+    "type": "STRING"
+  },
+  {
+    "name": "USR11",
+    "type": "STRING"
+  },
+  {
+    "name": "ZZCEBE",
+    "type": "STRING"
+  },
+  {
+    "name": "ZZSAKNR",
+    "type": "STRING"
+  },
+  {
+    "name": "batch_id_raw",
+    "type": "STRING"
+  },
+  {
+    "name": "batch_id_bronze",
+    "type": "STRING"
+  },
+  {
+    "name": "ingestion_timestamp_raw",
+    "type": "DATETIME"
+  },
+  {
+    "name": "ingestion_timestamp_bronze",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "is_valid",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "error_description",
+    "type": "STRING"
+  },
+  {
+    "name": "fields_with_errors",
+    "type": "STRING"
+  },
+  {
+    "name": "batch_id_silver",
+    "type": "STRING"
+  },
+  {
+    "name": "row_uuid_silver",
+    "type": "STRING"
+  },
+  {
+    "name": "ingestion_timestamp_silver",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "extraction_mode",
+    "type": "STRING"
   }
 ]
