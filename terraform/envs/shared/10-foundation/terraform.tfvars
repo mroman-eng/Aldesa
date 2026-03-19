@@ -1,5 +1,5 @@
 project_id   = "data-buildtrack-dev"
-environment  = "dev"
+environment  = "shared"
 region       = "europe-west1"
 service_name = "aldesa-buildtrack"
 

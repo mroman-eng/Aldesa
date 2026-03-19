@@ -8,8 +8,8 @@ variable "environment" {
   type        = string
 
   validation {
-    condition     = contains(["dev", "pro"], var.environment)
-    error_message = "environment must be one of: dev, pro."
+    condition     = contains(["shared", "pre", "dev", "pro"], var.environment)
+    error_message = "environment must be one of: shared, pre, dev, pro."
   }
 }
 
@@ -101,6 +101,18 @@ variable "datasphere_ingest_sa_id_override" {
   validation {
     condition     = var.datasphere_ingest_sa_id_override == null || can(regex("^[a-z][a-z0-9-]{4,28}[a-z0-9]$", var.datasphere_ingest_sa_id_override))
     error_message = "datasphere_ingest_sa_id_override must be a valid service account id (6-30 chars)."
+  }
+}
+
+variable "datasphere_ingest_sa_key_secret_id_override" {
+  description = "Optional override for the SAP Datasphere service account key secret id."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.datasphere_ingest_sa_key_secret_id_override == null || can(regex("^[A-Za-z0-9_-]{1,255}$", var.datasphere_ingest_sa_key_secret_id_override))
+    error_message = "datasphere_ingest_sa_key_secret_id_override must be a valid Secret Manager secret id."
   }
 }
 

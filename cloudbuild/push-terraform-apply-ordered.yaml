@@ -5,6 +5,7 @@ options:
 
 substitutions:
   _ENV: dev
+  _INCLUDE_FOUNDATION: "true"
   _TERRAFORM_VERSION: "1.14.4"
 
 steps:
@@ -16,7 +17,11 @@ steps:
       - |
         ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
 
-        make foundation_apply    ENV="${_ENV}" CI=true
+        if [ "${_INCLUDE_FOUNDATION}" = "true" ]; then
+          make foundation_apply ENV="${_ENV}" CI=true
+        else
+          echo "Skipping foundation_apply for ENV=${_ENV}"
+        fi
         make storage_bq_apply    ENV="${_ENV}" CI=true
         make orchestration_apply ENV="${_ENV}" CI=true
         make governance_apply    ENV="${_ENV}" CI=true

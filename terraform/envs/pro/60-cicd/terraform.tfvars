@@ -78,6 +78,9 @@ cloudbuild = {
       branch_regex        = "^main$"
       filename            = "cloudbuild/push-terraform-apply-ordered.yaml"
       service_account_ref = "terraform"
+      substitutions = {
+        _INCLUDE_FOUNDATION = "true"
+      }
       included_files = [
         "Makefile",
         "mk/**",

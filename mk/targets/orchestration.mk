@@ -1,21 +1,21 @@
 .PHONY: orchestration orchestration_init orchestration_plan orchestration_apply orchestration_sync_dags orchestration_destroy orchestration_clean _orchestration_cleanup_dataform_workspaces _orchestration_auto_import_eventarc_subscription_tuning _orchestration_detach_eventarc_subscription_tuning
-orchestration: orchestration_apply ## Run 30-orchestration workflow (init + plan + apply)
+orchestration: _check_workload_env orchestration_apply ## Run 30-orchestration workflow (init + plan + apply)
 
-orchestration_init: _check_gcp_project _check_gcp_auth _check_bootstrap_dir _check_orchestration_dir _check_bootstrap_state_bucket ## Initialize Terraform in envs/<env>/30-orchestration
+orchestration_init: _check_workload_env _check_gcp_project _check_gcp_auth _check_bootstrap_dir _check_orchestration_dir _check_bootstrap_state_bucket ## Initialize Terraform in envs/<env>/30-orchestration
 	@state_bucket="$(TFSTATE_BACKEND_BUCKET)"; \
 	echo "Using orchestration backend bucket: $$state_bucket (prefix=$(ORCHESTRATION_BACKEND_PREFIX))"; \
 	terraform -chdir=$(ORCHESTRATION_DIR) init -migrate-state -force-copy \
 		-backend-config="bucket=$$state_bucket" \
 		-backend-config="prefix=$(ORCHESTRATION_BACKEND_PREFIX)"
 
-orchestration_plan: _check_gcp_project _check_orchestration_dir orchestration_init _orchestration_auto_import_eventarc_subscription_tuning ## Plan env orchestration (Composer 3 + DAG bucket + IAM)
+orchestration_plan: _check_workload_env _check_gcp_project _check_orchestration_dir orchestration_init _orchestration_auto_import_eventarc_subscription_tuning ## Plan env orchestration (Composer 3 + DAG bucket + IAM)
 	terraform -chdir=$(ORCHESTRATION_DIR) plan \
 		-var="project_id=$(GOOGLE_PROJECT)" \
 		-var="environment=$(ENV)" \
 		-var="region=$(GCP_REGION)" \
 		-out=$(ORCHESTRATION_PLAN_FILE)
 
-orchestration_apply: _check_gcp_project _check_orchestration_dir orchestration_plan ## Apply env orchestration (Composer 3 + DAG bucket + IAM)
+orchestration_apply: _check_workload_env _check_gcp_project _check_orchestration_dir orchestration_plan ## Apply env orchestration (Composer 3 + DAG bucket + IAM)
 	terraform -chdir=$(ORCHESTRATION_DIR) apply $(ORCHESTRATION_PLAN_FILE)
 	@echo "Running post-apply reconciliation for Eventarc subscription tuning (auto-discover/import + second apply if needed)..."
 	@$(MAKE) --no-print-directory _orchestration_auto_import_eventarc_subscription_tuning ENV=$(ENV)
@@ -36,7 +36,7 @@ orchestration_apply: _check_gcp_project _check_orchestration_dir orchestration_p
 		exit 1; \
 	fi
 
-orchestration_sync_dags: _check_gcp_project _check_gcp_auth _check_orchestration_dir orchestration_init ## Sync local DAGs to the orchestration DAG bucket (on-demand, no delete)
+orchestration_sync_dags: _check_workload_env _check_gcp_project _check_gcp_auth _check_orchestration_dir orchestration_init ## Sync local DAGs to the orchestration DAG bucket (on-demand, no delete)
 	@set -euo pipefail; \
 	if ! command -v gcloud >/dev/null 2>&1; then \
 		echo "gcloud CLI is required for orchestration_sync_dags."; \
@@ -71,14 +71,14 @@ orchestration_sync_dags: _check_gcp_project _check_gcp_auth _check_orchestration
 			gcloud storage rsync --recursive "$$source_dir" "$$dest_uri"; \
 		fi
 
-orchestration_destroy: _check_gcp_project _check_orchestration_dir orchestration_init _confirm_destroy_orchestration _orchestration_cleanup_dataform_workspaces _orchestration_auto_import_eventarc_subscription_tuning _orchestration_detach_eventarc_subscription_tuning ## Destroy env orchestration resources (confirmation skipped when CI=true/FORCE_DESTROY=true)
+orchestration_destroy: _check_workload_env _check_gcp_project _check_orchestration_dir orchestration_init _confirm_destroy_orchestration _orchestration_cleanup_dataform_workspaces _orchestration_auto_import_eventarc_subscription_tuning _orchestration_detach_eventarc_subscription_tuning ## Destroy env orchestration resources (confirmation skipped when CI=true/FORCE_DESTROY=true)
 	terraform -chdir=$(ORCHESTRATION_DIR) destroy \
 		$(TF_DESTROY_AUTO_APPROVE) \
 		-var="project_id=$(GOOGLE_PROJECT)" \
 		-var="environment=$(ENV)" \
 		-var="region=$(GCP_REGION)"
 
-orchestration_clean: _check_orchestration_dir ## Clean up orchestration plan and local .terraform
+orchestration_clean: _check_workload_env _check_orchestration_dir ## Clean up orchestration plan and local .terraform
 	rm -f $(ORCHESTRATION_DIR)/$(ORCHESTRATION_PLAN_FILE)
 	rm -f $(ORCHESTRATION_DIR)/.eventarc_subscription_tuning.auto.tfvars.json
 	rm -rf $(ORCHESTRATION_DIR)/.terraform

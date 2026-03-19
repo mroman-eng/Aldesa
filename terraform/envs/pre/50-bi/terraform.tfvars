@@ -1,11 +1,11 @@
 project_id   = "data-buildtrack-dev"
-environment  = "dev"
+environment  = "pre"
 region       = "europe-west1"
 service_name = "aldesa-buildtrack"
 
 storage_bq_remote_state = {
   bucket            = "data-buildtrack-dev-tfstate-europe-west1"
-  storage_bq_prefix = "dev/20-storage-bq"
+  storage_bq_prefix = "pre/20-storage-bq"
 }
 
 # Optional override; keep null to resolve from storage-bq remote state.
@@ -35,8 +35,8 @@ looker_studio = {
 context_aware_access = {
   enabled                 = false                       # default is disabled
   access_policy_id        = "accessPolicies/1234567890" # change-it
-  access_level_short_name = "ls_dev_corp_access"        # change-it
-  title                   = "Looker Studio DEV allowed networks"
+  access_level_short_name = "ls_pre_corp_access"        # change-it
+  title                   = "Looker Studio PRE allowed networks"
   scope                   = "group:REPLACE_ME_WORKSPACE_SCOPE_GROUP@aldesa.com"
   mode                    = "WARN" # change to ACTIVE to enable enforcement
   allowed_ip_cidrs = [

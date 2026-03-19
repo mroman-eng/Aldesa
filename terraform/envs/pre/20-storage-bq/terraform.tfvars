@@ -1,22 +1,26 @@
 project_id   = "data-buildtrack-dev"
-environment  = "dev"
+environment  = "pre"
 region       = "europe-west1"
 service_name = "aldesa-buildtrack"
 
 additional_labels = {}
 
 landing_bucket = {
-  name     = "data-buildtrack-dev-ingesta-sap-europe-west1"
+  name     = "pre-data-buildtrack-dev-ingesta-sap-europe-west1"
   location = "europe-west1"
 }
 
+datasphere_ingest_sa_id_override            = "dsp-aldesa-buildtrack-dev"
+datasphere_ingest_sa_key_secret_id_override = "dsp-aldesa-buildtrack-dev-sa-key"
+dataform_git_token_secret_id_override       = "sec-aldesa-buildtrack-dev-dataform-github-pat"
+
 dataset_ids = {
-  alerts = "alerts"
-  logs   = "logs"
-  raw    = "raw"
-  bronze = "bronze"
-  silver = "silver"
-  gold   = "gold"
+  alerts = "pre_alerts"
+  logs   = "pre_logs"
+  raw    = "pre_raw"
+  bronze = "pre_bronze"
+  silver = "pre_silver"
+  gold   = "pre_gold"
 }
 
 bigquery_location_override = "europe-west1"

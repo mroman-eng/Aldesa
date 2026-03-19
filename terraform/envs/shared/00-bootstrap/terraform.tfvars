@@ -1,9 +1,13 @@
 project_id   = "data-buildtrack-dev"
-environment  = "dev"
+environment  = "shared"
 region       = "europe-west1"
 service_name = "aldesa-buildtrack"
 
 additional_labels = {}
+
+state_bucket_name_override   = "data-buildtrack-dev-tfstate-europe-west1"
+kms_key_ring_name_override   = "kr-aldesa-buildtrack-dev-sops"
+kms_crypto_key_name_override = "ck-aldesa-buildtrack-dev-sops"
 
 bootstrap_services = [
   "artifactregistry.googleapis.com",

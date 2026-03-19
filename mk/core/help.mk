@@ -1,5 +1,6 @@
 .PHONY: help show_context
 help: ## This help
+	@echo "Usage: make <target> ENV=shared|pre|dev|pro"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-34s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 show_context: ## Print selected environment, project and Terraform path
@@ -14,9 +15,12 @@ show_context: ## Print selected environment, project and Terraform path
 	@echo "GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-<unset>}"
 	@echo "GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT=$${GOOGLE_BACKEND_IMPERSONATE_SERVICE_ACCOUNT:-<unset>}"
 	@echo "GOOGLE_APPLICATION_CREDENTIALS=$${GOOGLE_APPLICATION_CREDENTIALS:-<unset>}"
+	@echo "BOOTSTRAP_ENV=$(BOOTSTRAP_ENV)"
 	@echo "BOOTSTRAP_DIR=$(BOOTSTRAP_DIR)"
 	@echo "BOOTSTRAP_BACKEND_PREFIX=$(BOOTSTRAP_BACKEND_PREFIX)"
 	@echo "FOUNDATION_DIR=$(FOUNDATION_DIR)"
 	@echo "FOUNDATION_BACKEND_PREFIX=$(FOUNDATION_BACKEND_PREFIX)"
+	@echo "DEV_DIR=$(DEV_DIR)"
+	@echo "DEV_BACKEND_PREFIX=$(DEV_BACKEND_PREFIX)"
 	@echo "STORAGE_BQ_DIR=$(STORAGE_BQ_DIR)"
 	@echo "STORAGE_BQ_BACKEND_PREFIX=$(STORAGE_BQ_BACKEND_PREFIX)"

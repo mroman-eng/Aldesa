@@ -100,9 +100,39 @@ _check_gcp_auth:
 		fi; \
 	fi
 
+_check_bootstrap_env:
+	@if [ "$(ENV)" != "shared" ] && [ "$(ENV)" != "pro" ]; then \
+		echo "bootstrap_* targets require ENV=shared or ENV=pro."; \
+		exit 1; \
+	fi
+
+_check_foundation_env:
+	@if [ "$(ENV)" != "shared" ] && [ "$(ENV)" != "pro" ]; then \
+		echo "foundation_* targets require ENV=shared or ENV=pro."; \
+		exit 1; \
+	fi
+
+_check_workload_env:
+	@if [ "$(ENV)" != "pre" ] && [ "$(ENV)" != "pro" ]; then \
+		echo "workload targets (*_storage_bq, orchestration_*, governance_*, bi_*, cicd_*) require ENV=pre or ENV=pro."; \
+		exit 1; \
+	fi
+
+_check_dev_stack_env:
+	@if [ "$(ENV)" != "dev" ]; then \
+		echo "dev_* targets require ENV=dev."; \
+		exit 1; \
+	fi
+
 _check_bootstrap_dir:
 	@if [ ! -d "$(BOOTSTRAP_DIR)" ]; then \
 		echo "Bootstrap directory does not exist: $(BOOTSTRAP_DIR)"; \
+		exit 1; \
+	fi
+
+_check_dev_dir:
+	@if [ ! -d "$(DEV_DIR)" ]; then \
+		echo "Dev directory does not exist: $(DEV_DIR)"; \
 		exit 1; \
 	fi
 
@@ -242,4 +272,13 @@ _confirm_destroy_cicd:
 		echo "FORCE_DESTROY=true, skipping CI/CD destroy confirmation."; \
 	else \
 		echo -n "[DESTROY CONFIRMATION] Destroy CI/CD in ENV=$(ENV), project=$(GOOGLE_PROJECT). Type 'destroy-cicd' to continue > " && read ans && [ "$$ans" = "destroy-cicd" ]; \
+	fi
+
+_confirm_destroy_dev:
+	@if [ "$(CI)" = "true" ]; then \
+		echo "CI=true, skipping dev destroy confirmation."; \
+	elif [ "$(FORCE_DESTROY)" = "true" ]; then \
+		echo "FORCE_DESTROY=true, skipping dev destroy confirmation."; \
+	else \
+		echo -n "[DESTROY CONFIRMATION] Destroy dev stack in ENV=$(ENV), project=$(GOOGLE_PROJECT). Type 'destroy-dev' to continue > " && read ans && [ "$$ans" = "destroy-dev" ]; \
 	fi

@@ -29,8 +29,14 @@ locals {
   landing_bucket_versioning_enabled       = coalesce(try(var.landing_bucket.versioning_enabled, null), true)
   landing_bucket_public_access_prevention = coalesce(try(var.landing_bucket.public_access_prevention, null), "enforced")
 
-  datasphere_ingest_sa_id     = coalesce(var.datasphere_ingest_sa_id_override, "dsp-${var.service_name}-${var.environment}")
-  datasphere_sa_key_secret_id = "dsp-${var.service_name}-${var.environment}-sa-key"
+  datasphere_ingest_sa_id = coalesce(
+    var.datasphere_ingest_sa_id_override,
+    "dsp-${var.service_name}-${var.environment}"
+  )
+  datasphere_sa_key_secret_id = coalesce(
+    var.datasphere_ingest_sa_key_secret_id_override,
+    "dsp-${var.service_name}-${var.environment}-sa-key"
+  )
   dataform_git_token_secret_id = coalesce(
     var.dataform_git_token_secret_id_override,
     "sec-${var.service_name}-${var.environment}-dataform-github-pat"

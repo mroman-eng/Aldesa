@@ -3,12 +3,27 @@ CI ?= false
 FORCE_DESTROY ?= false
 TF_DESTROY_AUTO_APPROVE ?= $(if $(filter true,$(CI)),-auto-approve,)
 
-ENV ?= dev
+ENV ?=
+
+ALLOW_MISSING_ENV_GOALS := help
+
+ifeq ($(strip $(MAKECMDGOALS)),)
+ENV_REQUIRED := false
+else ifneq ($(filter $(ALLOW_MISSING_ENV_GOALS),$(MAKECMDGOALS)),)
+ENV_REQUIRED := false
+else
+ENV_REQUIRED := true
+endif
+
+DEV_DIR := terraform/envs/$(ENV)
+DEV_PLAN_FILE ?= $(PROJECT_NAME)-$(ENV)-dev.tfplan
+DEV_BACKEND_PREFIX ?= $(ENV)
 
 BOOTSTRAP_COMPONENT := 00-bootstrap
-BOOTSTRAP_DIR := terraform/envs/$(ENV)/$(BOOTSTRAP_COMPONENT)
+BOOTSTRAP_ENV := $(if $(filter pre dev,$(ENV)),shared,$(ENV))
+BOOTSTRAP_DIR := terraform/envs/$(BOOTSTRAP_ENV)/$(BOOTSTRAP_COMPONENT)
 BOOTSTRAP_PLAN_FILE ?= $(PROJECT_NAME)-$(ENV)-bootstrap.tfplan
-BOOTSTRAP_BACKEND_PREFIX ?= $(ENV)/$(BOOTSTRAP_COMPONENT)
+BOOTSTRAP_BACKEND_PREFIX ?= $(BOOTSTRAP_ENV)/$(BOOTSTRAP_COMPONENT)
 BOOTSTRAP_KMS_KEY_RING_NAME ?= kr-$(PROJECT_NAME)-$(ENV)-sops
 BOOTSTRAP_KMS_CRYPTO_KEY_NAME ?= ck-$(PROJECT_NAME)-$(ENV)-sops
 
@@ -48,15 +63,26 @@ CICD_PLAN_FILE ?= $(PROJECT_NAME)-$(ENV)-cicd.tfplan
 CICD_BACKEND_PREFIX ?= $(ENV)/$(CICD_COMPONENT)
 
 GCP_REGION ?= europe-west1
+GCP_PROJECT_SHARED ?= data-buildtrack-dev
+GCP_PROJECT_PRE ?= data-buildtrack-dev
 GCP_PROJECT_DEV ?= data-buildtrack-dev
 GCP_PROJECT_PRO ?= data-buildtrack-pro
 
-ifeq ($(ENV),dev)
+ifeq ($(strip $(ENV)),)
+ifeq ($(ENV_REQUIRED),true)
+$(error ENV is required. Pass ENV=shared, ENV=pre, ENV=dev or ENV=pro)
+endif
+SELECTED_PROJECT :=
+else ifeq ($(ENV),shared)
+SELECTED_PROJECT := $(GCP_PROJECT_SHARED)
+else ifeq ($(ENV),pre)
+SELECTED_PROJECT := $(GCP_PROJECT_PRE)
+else ifeq ($(ENV),dev)
 SELECTED_PROJECT := $(GCP_PROJECT_DEV)
 else ifeq ($(ENV),pro)
 SELECTED_PROJECT := $(GCP_PROJECT_PRO)
 else
-$(error ENV must be one of: dev, pro)
+$(error ENV must be one of: shared, pre, dev, pro)
 endif
 
 GOOGLE_PROJECT ?= $(SELECTED_PROJECT)
@@ -64,7 +90,13 @@ TF_SA_ACCOUNT_ID ?= sa-terraform-buildtrack
 TF_SA_EMAIL ?= $(TF_SA_ACCOUNT_ID)@$(GOOGLE_PROJECT).iam.gserviceaccount.com
 TF_SA_KEY_FILE ?=
 
-ifneq ($(filter %-$(ENV),$(GOOGLE_PROJECT)),)
+ifeq ($(ENV),shared)
+TFSTATE_ENV_TOKEN :=
+else ifeq ($(ENV),pre)
+TFSTATE_ENV_TOKEN :=
+else ifeq ($(ENV),dev)
+TFSTATE_ENV_TOKEN :=
+else ifneq ($(filter %-$(ENV),$(GOOGLE_PROJECT)),)
 TFSTATE_ENV_TOKEN :=
 else
 TFSTATE_ENV_TOKEN := -$(ENV)

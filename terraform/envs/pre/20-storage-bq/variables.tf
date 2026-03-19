@@ -57,6 +57,13 @@ variable "datasphere_ingest_sa_id_override" {
   nullable    = true
 }
 
+variable "datasphere_ingest_sa_key_secret_id_override" {
+  description = "Optional override for the SAP Datasphere service account key secret id."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
 variable "datasphere_landing_bucket_roles" {
   description = "Optional extra IAM roles granted to the SAP Datasphere ingestion service account on the landing bucket."
   type        = list(string)
