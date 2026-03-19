@@ -1,0 +1,19 @@
+timeout: 10800s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _ENV: shared
+  _TERRAFORM_VERSION: "1.14.4"
+
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
+
+        make bootstrap_apply ENV="${_ENV}" CI=true
+        make foundation_apply ENV="${_ENV}" CI=true

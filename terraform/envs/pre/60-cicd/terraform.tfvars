@@ -114,6 +114,30 @@ cloudbuild = {
       ]
     },
 
+    # Push to develop (deploy SHARED bootstrap/foundation on shared changes)
+    {
+      name                = "cb-shared-tf-apply"
+      description         = "Apply shared Terraform bootstrap and foundation in data-buildtrack-dev on push to develop."
+      event               = "PUSH"
+      disabled            = true
+      branch_regex        = "^develop$"
+      filename            = "cloudbuild/push-shared-terraform-apply.yaml"
+      service_account_ref = "terraform"
+      substitutions = {
+        _ENV = "shared"
+      }
+      included_files = [
+        "Makefile",
+        "mk/**",
+        "terraform/modules/**",
+        "terraform/components/00-bootstrap/**",
+        "terraform/components/10-foundation/**",
+        "terraform/envs/shared/00-bootstrap/**",
+        "terraform/envs/shared/10-foundation/**",
+        "cloudbuild/**",
+      ]
+    },
+
     # Push to develop (deploy PRE with a single ordered Terraform pipeline)
     {
       name                = "cb-pre-tf-apply-ordered"

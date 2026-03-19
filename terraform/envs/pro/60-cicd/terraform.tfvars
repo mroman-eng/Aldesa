@@ -79,18 +79,21 @@ cloudbuild = {
       filename            = "cloudbuild/push-terraform-apply-ordered.yaml"
       service_account_ref = "terraform"
       substitutions = {
+        _INCLUDE_BOOTSTRAP  = "true"
         _INCLUDE_FOUNDATION = "true"
       }
       included_files = [
         "Makefile",
         "mk/**",
         "terraform/modules/**",
+        "terraform/components/00-bootstrap/**",
         "terraform/components/10-foundation/**",
         "terraform/components/20-storage-bq/**",
         "terraform/components/30-orchestration/**",
         "terraform/components/40-governance/**",
         "terraform/components/50-bi/**",
         "terraform/components/60-cicd/**",
+        "terraform/envs/pro/00-bootstrap/**",
         "terraform/envs/pro/10-foundation/**",
         "terraform/envs/pro/20-storage-bq/**",
         "terraform/envs/pro/30-orchestration/**",

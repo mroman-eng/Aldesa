@@ -5,6 +5,7 @@ options:
 
 substitutions:
   _ENV: dev
+  _INCLUDE_BOOTSTRAP: "false"
   _INCLUDE_FOUNDATION: "true"
   _TERRAFORM_VERSION: "1.14.4"
 
@@ -16,6 +17,12 @@ steps:
       - -ceu
       - |
         ./cloudbuild/scripts/install_terraform_and_tools.sh "${_TERRAFORM_VERSION}"
+
+        if [ "${_INCLUDE_BOOTSTRAP}" = "true" ]; then
+          make bootstrap_apply ENV="${_ENV}" CI=true
+        else
+          echo "Skipping bootstrap_apply for ENV=${_ENV}"
+        fi
 
         if [ "${_INCLUDE_FOUNDATION}" = "true" ]; then
           make foundation_apply ENV="${_ENV}" CI=true
