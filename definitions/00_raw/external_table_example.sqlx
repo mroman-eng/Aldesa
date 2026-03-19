@@ -1,0 +1,17 @@
+config {
+  type: "operations",
+  hasOutput: true,
+  schema: "dev_raw",
+  name: "external_table_example",
+  description: "Ejemplo de creación de External Table con Dataform",
+  tags: ["raw", "daily"]
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+WITH PARTITION COLUMNS
+OPTIONS (
+  uris = ['gs://dev-data-buildtrack-dev-ingesta-sap-europe-west1/example/*'],
+  format = 'CSV',
+  hive_partition_uri_prefix = 'gs://dev-data-buildtrack-dev-ingesta-sap-europe-west1/example',
+  require_hive_partition_filter = false
+);

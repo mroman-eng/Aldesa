@@ -16,3 +16,6 @@ node_modules/
 
 # Ruffle local artifacts
 **/.ruff_cache/
+
+# macOS local artifacts
+.DS_Store
