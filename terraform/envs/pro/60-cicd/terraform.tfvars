@@ -15,7 +15,7 @@ orchestration_remote_state = {
 
 cicd_dependencies = {
   terraform_service_account_email = null
-  dags_bucket_name                = null
+  dags_bucket_name                = "pro-data-buildtrack-pro-dags-composer-europe-west1"
 }
 
 # Cloud Build CI/CD foundation: dedicated DAG sync SA + optional triggers.
@@ -29,7 +29,7 @@ cloudbuild = {
   grant_logging_log_writer_on_terraform_sa                     = true
 
   dags_sync_pipeline = {
-    enabled                    = true
+    enabled                    = false
     service_account_id         = null
     display_name               = "Cloud Build DAG sync (PRO)"
     grant_storage_object_admin = true

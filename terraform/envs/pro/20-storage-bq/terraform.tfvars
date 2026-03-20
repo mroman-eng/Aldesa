@@ -6,17 +6,17 @@ service_name = "aldesa-buildtrack"
 additional_labels = {}
 
 landing_bucket = {
-  name     = "data-buildtrack-pro-ingesta-sap-europe-west1"
+  name     = "pro-data-buildtrack-pro-ingesta-sap-europe-west1"
   location = "europe-west1"
 }
 
 dataset_ids = {
-  alerts = "alerts"
-  logs   = "logs"
-  raw    = "raw"
-  bronze = "bronze"
-  silver = "silver"
-  gold   = "gold"
+  alerts = "pro_alerts"
+  logs   = "pro_logs"
+  raw    = "pro_raw"
+  bronze = "pro_bronze"
+  silver = "pro_silver"
+  gold   = "pro_gold"
 }
 
 bigquery_location_override = "europe-west1"

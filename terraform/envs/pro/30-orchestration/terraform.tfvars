@@ -19,16 +19,13 @@ storage_bq_remote_state = {
 }
 
 composer = {
-  image_version    = "composer-3-airflow-2.10.5-build.29"
-  environment_name = "data-buildtrack-pro-orchestrator-sap-europe-west1"
-  airflow_config_overrides = {
-    "email-email_backend" = "airflow.providers.sendgrid.utils.emailer.send_email"
-    "sendgrid-from_email" = "maypher.roman@vasscompany.com"
-  }
+  image_version            = "composer-3-airflow-2.10.5-build.29"
+  environment_name         = "pro-data-buildtrack-pro-orchestrator-sap-europe-west1"
+  airflow_config_overrides = {}
   env_variables = {
     GCP_PROJECT_ID = "data-buildtrack-pro"
     GCP_LOCATION   = "europe-west1"
-    LANDING_BUCKET = "data-buildtrack-pro-ingesta-sap-europe-west1"
+    LANDING_BUCKET = "pro-data-buildtrack-pro-ingesta-sap-europe-west1"
   }
   service_account_id         = "cmp-pro-aldesa-buildtrack"
   environment_size           = "ENVIRONMENT_SIZE_SMALL"
@@ -58,18 +55,18 @@ composer = {
 
 composer_bigquery_access = {
   grant_job_user          = true
-  dataset_data_editor_ids = ["raw", "bronze", "silver", "gold", "logs"]
+  dataset_data_editor_ids = ["pro_raw", "pro_bronze", "pro_silver", "pro_gold", "pro_logs"]
 }
 
 dags_bucket = {
-  name          = "data-buildtrack-pro-dags-composer-europe-west1"
+  name          = "pro-data-buildtrack-pro-dags-composer-europe-west1"
   location      = "europe-west1"
   force_destroy = false
 }
 
 dataform = {
   enabled                   = true
-  repository_name           = "data-buildtrack-pro-dataform-sap-europe-west1"
+  repository_name           = "pro-data-buildtrack-pro-dataform-sap-europe-west1"
   git_remote_url            = "https://github.com/GrupoAldesa/build-track-gcp-dataops.git"
   git_remote_default_branch = "main"
   git_token_secret_name     = "sec-aldesa-buildtrack-pro-dataform-github-pat"
@@ -84,7 +81,7 @@ dataform = {
       assertion_schema = "bronze_assertions"
       default_database = "data-buildtrack-pro"
       default_location = "europe-west1"
-      default_schema   = "bronze"
+      default_schema   = "pro_bronze"
       vars             = {}
     }
   }
@@ -99,12 +96,12 @@ dataform = {
 # GCS->Pub/Sub->Cloud Function trigger to launch Composer DAGs on new landing files.
 landing_to_composer_trigger = {
   enabled                          = true
-  function_name                    = "data-buildtrack-pro-clf-ingesta-sap"
+  function_name                    = "pro-data-buildtrack-pro-clf-ingesta-sap"
   runtime_service_account_id       = "cf-pro-aldesa-buildtrack-dag"
   trigger_service_account_id       = "evt-pro-aldesa-buildtrack-dag"
-  pubsub_topic_name                = "data-buildtrack-pro-ps-ingesta-sap-europe-west1"
+  pubsub_topic_name                = "pro-data-buildtrack-pro-ps-ingesta-sap-europe-west1"
   source_dir                       = "../../../../functions/clf-ingesta-sap"
-  source_object_prefix             = "functions/data-buildtrack-pro-clf-ingesta-sap"
+  source_object_prefix             = "functions/pro-data-buildtrack-pro-clf-ingesta-sap"
   source_archive_bucket_name       = null
   entry_point                      = "trigger_dag"
   runtime                          = "python311"

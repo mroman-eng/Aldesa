@@ -5,6 +5,8 @@ service_name = "aldesa-buildtrack"
 
 additional_labels = {}
 
+state_bucket_name_override = "data-buildtrack-pro-tfstate-europe-west1"
+
 bootstrap_services = [
   "artifactregistry.googleapis.com",
   "bigquery.googleapis.com",

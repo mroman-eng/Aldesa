@@ -11,10 +11,10 @@ storage_bq_remote_state = {
 }
 
 governed_resources = {
-  raw_dataset_id    = "raw"
-  bronze_dataset_id = "bronze"
-  silver_dataset_id = "silver"
-  gold_dataset_id   = "gold"
+  raw_dataset_id    = "pro_raw"
+  bronze_dataset_id = "pro_bronze"
+  silver_dataset_id = "pro_silver"
+  gold_dataset_id   = "pro_gold"
 }
 
 auto_profile_scans = {
