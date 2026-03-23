@@ -21,6 +21,11 @@ landing_bucket = {
   force_destroy = true
 }
 
+bronze_parquet_bucket = {
+  name     = "dev-data-buildtrack-dev-bronze-parquet-europe-west1"
+  location = "europe-west1"
+}
+
 dataset_ids = {
   alerts = "dev_alerts"
   logs   = "dev_logs"
@@ -71,6 +76,8 @@ composer_bigquery_access = {
   grant_job_user          = true
   dataset_data_editor_ids = ["dev_alerts", "dev_logs", "dev_raw", "dev_bronze", "dev_silver", "dev_gold"]
 }
+
+composer_project_roles = []
 
 dags_bucket = {
   name          = "dev-data-buildtrack-dev-dags-composer-europe-west1"

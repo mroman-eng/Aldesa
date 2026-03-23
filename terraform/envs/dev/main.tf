@@ -88,6 +88,7 @@ module "storage_bq" {
   additional_labels = var.additional_labels
 
   landing_bucket                           = var.landing_bucket
+  bronze_parquet_bucket                    = var.bronze_parquet_bucket
   enable_datasphere_ingest_service_account = false
   enable_dataform_git_token_secret         = false
   bigquery_location_override               = var.bigquery_location_override
@@ -115,12 +116,14 @@ module "orchestration" {
   service_name      = var.service_name
   additional_labels = var.additional_labels
 
-  network_self_link    = data.terraform_remote_state.foundation.outputs.network_self_link
-  subnetwork_self_link = data.terraform_remote_state.foundation.outputs.subnetwork_self_link
-  landing_bucket_name  = module.storage_bq[0].landing_bucket_name
+  network_self_link          = data.terraform_remote_state.foundation.outputs.network_self_link
+  subnetwork_self_link       = data.terraform_remote_state.foundation.outputs.subnetwork_self_link
+  landing_bucket_name        = module.storage_bq[0].landing_bucket_name
+  bronze_parquet_bucket_name = module.storage_bq[0].bronze_parquet_bucket_name
 
   composer                 = local.composer_config
   composer_bigquery_access = local.composer_bigquery_access_config
+  composer_project_roles   = var.composer_project_roles
   dags_bucket              = var.dags_bucket
   dataform = {
     enabled = false

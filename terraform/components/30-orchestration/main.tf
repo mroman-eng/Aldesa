@@ -271,10 +271,7 @@ resource "google_project_iam_member" "composer_worker" {
 }
 
 resource "google_project_iam_member" "composer_project_roles" {
-  for_each = toset([
-    "roles/dataform.admin",
-    "roles/dataplex.editor",
-  ])
+  for_each = toset(var.composer_project_roles)
 
   project = var.project_id
   role    = each.value

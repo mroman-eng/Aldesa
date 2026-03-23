@@ -104,6 +104,20 @@ variable "composer_bigquery_access" {
   }
 }
 
+variable "composer_project_roles" {
+  description = "Optional project-level IAM roles granted to the Composer service account."
+  type        = list(string)
+  default     = ["roles/dataform.admin", "roles/dataplex.editor"]
+
+  validation {
+    condition = alltrue([
+      for role in var.composer_project_roles :
+      can(regex("^(roles/[A-Za-z0-9_.]+|projects/[a-z][a-z0-9-]{4,28}[a-z0-9]/roles/[A-Za-z0-9_.]+|organizations/[0-9]+/roles/[A-Za-z0-9_.]+)$", role))
+    ])
+    error_message = "composer_project_roles must contain valid role names (roles/*, projects/*/roles/*, or organizations/*/roles/*)."
+  }
+}
+
 variable "landing_to_composer_trigger" {
   description = "Optional GCS->Pub/Sub->Cloud Function trigger that launches Composer DAGs."
   type = object({

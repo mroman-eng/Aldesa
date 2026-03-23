@@ -66,6 +66,20 @@ variable "landing_bucket" {
   default = {}
 }
 
+variable "bronze_parquet_bucket" {
+  description = "Bronze parquet historical bucket settings."
+  type = object({
+    delete_noncurrent_versions_after_days = optional(number)
+    force_destroy                         = optional(bool)
+    location                              = optional(string)
+    name                                  = optional(string)
+    public_access_prevention              = optional(string)
+    storage_class                         = optional(string)
+    versioning_enabled                    = optional(bool)
+  })
+  default = {}
+}
+
 variable "bigquery_location_override" {
   description = "Optional override for BigQuery datasets location."
   type        = string
@@ -148,6 +162,12 @@ variable "composer_bigquery_access" {
     dataset_data_editor_ids = optional(list(string))
   })
   default = {}
+}
+
+variable "composer_project_roles" {
+  description = "Optional project-level IAM roles granted to the Composer service account."
+  type        = list(string)
+  default     = []
 }
 
 variable "dags_bucket" {
