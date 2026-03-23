@@ -49,6 +49,7 @@ cloudbuild = {
       service_account_ref = "terraform"
       included_files = [
         "functions/**",
+        "tests/dags/**",
       ]
     },
     {
@@ -62,7 +63,6 @@ cloudbuild = {
       service_account_ref = "terraform"
       included_files = [
         "dags/**",
-        "tests/dags/**",
       ]
     },
     {
