@@ -47,6 +47,9 @@ cloudbuild = {
       comment_control     = "COMMENTS_DISABLED"
       filename            = "cloudbuild/pr-validate-python.yaml"
       service_account_ref = "terraform"
+      included_files = [
+        "functions/**",
+      ]
     },
     {
       name                = "cb-pr-pre-dags"
@@ -57,6 +60,10 @@ cloudbuild = {
       comment_control     = "COMMENTS_DISABLED"
       filename            = "cloudbuild/pr-validate-dags.yaml"
       service_account_ref = "terraform"
+      included_files = [
+        "dags/**",
+        "tests/dags/**",
+      ]
     },
     {
       name                = "cb-pr-pre-dataform"
@@ -67,6 +74,13 @@ cloudbuild = {
       comment_control     = "COMMENTS_DISABLED"
       filename            = "cloudbuild/pr-validate-dataform.yaml"
       service_account_ref = "terraform"
+      included_files = [
+        "definitions/**",
+        "includes/**",
+        "workflow_settings.yaml",
+        "package.json",
+        "package-lock.json",
+      ]
     },
     {
       name                = "cb-pr-pre-terraform"
