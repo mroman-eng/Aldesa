@@ -40,12 +40,22 @@ cloudbuild = {
     # PR validations (target branch: develop)
     {
       name                = "cb-pr-pre-python"
-      description         = "PR validation for Python files - Always-on"
+      description         = "PR validation for Python function files - Always-on"
       event               = "PULL_REQUEST"
       disabled            = false
       branch_regex        = "^develop$"
       comment_control     = "COMMENTS_DISABLED"
       filename            = "cloudbuild/pr-validate-python.yaml"
+      service_account_ref = "terraform"
+    },
+    {
+      name                = "cb-pr-pre-dags"
+      description         = "PR validation for Airflow DAG changes - Always-on"
+      event               = "PULL_REQUEST"
+      disabled            = false
+      branch_regex        = "^develop$"
+      comment_control     = "COMMENTS_DISABLED"
+      filename            = "cloudbuild/pr-validate-dags.yaml"
       service_account_ref = "terraform"
     },
     {

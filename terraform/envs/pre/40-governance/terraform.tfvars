@@ -11,53 +11,13 @@ storage_bq_remote_state = {
 }
 
 governed_resources = {
-  raw_dataset_id    = "pre_raw"
   bronze_dataset_id = "pre_bronze"
   silver_dataset_id = "pre_silver"
   gold_dataset_id   = "pre_gold"
 }
 
 auto_profile_scans = {
-  enabled        = true
-  include_layers = ["raw", "bronze", "silver"]
+  enabled = false
 }
 
-dataplex_datascans = {
-  # Optional custom profile scan definitions.
-  # If a key matches an auto-generated scan id, this block overrides that scan.
-  #
-  # profile_scans = {
-  #   dps-proj-raw = {
-  #     display_name = "dps_proj_raw_custom"
-  #     layer        = "raw"
-  #     table_id     = "proj"
-  #     execution = {
-  #       trigger_mode  = "SCHEDULE"
-  #       schedule_cron = "0 */6 * * *"
-  #     }
-  #     sampling_percent = 20
-  #     row_filter       = "MANDT IS NOT NULL"
-  #   }
-  # }
-
-  quality_scans = {
-    dqs-proj-raw = {
-      display_name = "dqs_proj_raw"
-      layer        = "raw"
-      table_id     = "proj"
-      execution = {
-        trigger_mode = "ON_DEMAND"
-      }
-      rules = [
-        {
-          name        = "non-empty-table"
-          description = "Basic table condition placeholder."
-          dimension   = "VALIDITY"
-          table_condition_expectation = {
-            sql_expression = "TRUE"
-          }
-        }
-      ]
-    }
-  }
-}
+dataplex_datascans = {}

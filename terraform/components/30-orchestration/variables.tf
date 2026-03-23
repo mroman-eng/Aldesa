@@ -75,6 +75,18 @@ variable "landing_bucket_name" {
   type        = string
 }
 
+variable "bronze_parquet_bucket_name" {
+  description = "Bronze parquet historical bucket name from storage-bq."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.bronze_parquet_bucket_name == null || can(regex("^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", var.bronze_parquet_bucket_name))
+    error_message = "bronze_parquet_bucket_name must be a valid GCS bucket name."
+  }
+}
+
 variable "composer_bigquery_access" {
   description = "Optional BigQuery IAM grants for the Composer service account."
   type = object({
@@ -359,11 +371,12 @@ variable "dags_bucket" {
 variable "dataform" {
   description = "Dataform repository, secret and scheduling settings."
   type = object({
-    enabled                   = optional(bool)
-    git_remote_default_branch = optional(string)
-    git_remote_url            = optional(string)
-    git_token_secret_name     = optional(string)
-    git_token_secret_version  = optional(string)
+    enabled                      = optional(bool)
+    execution_service_account_id = optional(string)
+    git_remote_default_branch    = optional(string)
+    git_remote_url               = optional(string)
+    git_token_secret_name        = optional(string)
+    git_token_secret_version     = optional(string)
     release_config = optional(object({
       cron_schedule = optional(string)
       enabled       = optional(bool)
@@ -394,6 +407,11 @@ variable "dataform" {
   validation {
     condition     = try(var.dataform.repository_name, null) == null || can(regex("^[a-z][a-z0-9-]{2,62}$", var.dataform.repository_name))
     error_message = "dataform.repository_name must be a valid Dataform repository id."
+  }
+
+  validation {
+    condition     = try(var.dataform.execution_service_account_id, null) == null || can(regex("^[a-z][a-z0-9-]{4,28}[a-z0-9]$", var.dataform.execution_service_account_id))
+    error_message = "dataform.execution_service_account_id must be a valid service account id (6-30 chars)."
   }
 
   validation {

@@ -12,5 +12,19 @@ resource "google_storage_bucket" "this" {
     enabled = var.versioning_enabled
   }
 
+  dynamic "lifecycle_rule" {
+    for_each = var.delete_noncurrent_versions_after_days == null ? [] : [var.delete_noncurrent_versions_after_days]
+
+    content {
+      action {
+        type = "Delete"
+      }
+
+      condition {
+        days_since_noncurrent_time = lifecycle_rule.value
+      }
+    }
+  }
+
   labels = var.labels
 }

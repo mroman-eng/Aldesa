@@ -11,10 +11,12 @@ locals {
   )
 
   dataset_ids_by_layer = {
-    raw    = var.source_resources.raw_dataset_id
-    bronze = var.source_resources.bronze_dataset_id
-    silver = var.source_resources.silver_dataset_id
-    gold   = var.source_resources.gold_dataset_id
+    for layer, dataset_id in {
+      raw    = try(var.source_resources.raw_dataset_id, null)
+      bronze = var.source_resources.bronze_dataset_id
+      silver = var.source_resources.silver_dataset_id
+      gold   = var.source_resources.gold_dataset_id
+    } : layer => dataset_id if dataset_id != null
   }
 
   auto_profile_scans_enabled = coalesce(try(var.auto_profile_scans.enabled, null), true)

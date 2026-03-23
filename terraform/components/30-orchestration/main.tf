@@ -48,6 +48,9 @@ locals {
       GCP_REGION        = var.region
       GCP_REPOSITORY_ID = local.dataform_repository_name
     },
+    var.bronze_parquet_bucket_name == null ? {} : {
+      BRONZE_PARQUET_BUCKET = var.bronze_parquet_bucket_name
+    },
     coalesce(try(var.composer.env_variables, null), {})
   )
   composer_pypi_packages           = coalesce(try(var.composer.pypi_packages, null), {})
@@ -63,12 +66,13 @@ locals {
   dags_bucket_versioning_enabled       = coalesce(try(var.dags_bucket.versioning_enabled, null), true)
   dags_bucket_public_access_prevention = lower(coalesce(try(var.dags_bucket.public_access_prevention, null), "enforced"))
 
-  dataform_enabled                   = coalesce(try(var.dataform.enabled, null), true)
-  dataform_repository_name           = coalesce(try(var.dataform.repository_name, null), "${var.project_id}-dataform-sap-${var.region}")
-  dataform_git_remote_url            = try(var.dataform.git_remote_url, null)
-  dataform_git_remote_default_branch = coalesce(try(var.dataform.git_remote_default_branch, null), "main")
-  dataform_git_token_secret_name     = coalesce(try(var.dataform.git_token_secret_name, null), "sec-${var.service_name}-${var.environment}-dataform-github-pat")
-  dataform_git_token_secret_version  = coalesce(try(var.dataform.git_token_secret_version, null), "latest")
+  dataform_enabled                      = coalesce(try(var.dataform.enabled, null), true)
+  dataform_repository_name              = coalesce(try(var.dataform.repository_name, null), "${var.project_id}-dataform-sap-${var.region}")
+  dataform_execution_service_account_id = try(var.dataform.execution_service_account_id, null)
+  dataform_git_remote_url               = try(var.dataform.git_remote_url, null)
+  dataform_git_remote_default_branch    = coalesce(try(var.dataform.git_remote_default_branch, null), "main")
+  dataform_git_token_secret_name        = coalesce(try(var.dataform.git_token_secret_name, null), "sec-${var.service_name}-${var.environment}-dataform-github-pat")
+  dataform_git_token_secret_version     = coalesce(try(var.dataform.git_token_secret_version, null), "latest")
   dataform_git_token_secret_version_resource = (
     "projects/${var.project_id}/secrets/${local.dataform_git_token_secret_name}/versions/${local.dataform_git_token_secret_version}"
   )
@@ -113,7 +117,7 @@ locals {
     80
   )
   landing_to_composer_ingress_settings    = coalesce(try(var.landing_to_composer_trigger.ingress_settings, null), "ALLOW_ALL")
-  landing_to_composer_object_name_prefix  = coalesce(try(var.landing_to_composer_trigger.object_name_prefix, null), "raw/sap/")
+  landing_to_composer_object_name_prefix  = try(var.landing_to_composer_trigger.object_name_prefix, null) == null ? "raw/sap/" : var.landing_to_composer_trigger.object_name_prefix
   landing_to_composer_retry_policy        = coalesce(try(var.landing_to_composer_trigger.retry_policy, null), "RETRY_POLICY_DO_NOT_RETRY")
   landing_to_composer_extra_env           = coalesce(try(var.landing_to_composer_trigger.environment_variables, null), {})
   landing_to_composer_grant_eventarc_role = coalesce(try(var.landing_to_composer_trigger.eventarc_receiver_project_role, null), true)
@@ -266,6 +270,17 @@ resource "google_project_iam_member" "composer_worker" {
   member  = "serviceAccount:${google_service_account.composer.email}"
 }
 
+resource "google_project_iam_member" "composer_project_roles" {
+  for_each = toset([
+    "roles/dataform.admin",
+    "roles/dataplex.editor",
+  ])
+
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.composer.email}"
+}
+
 # Grant BigQuery job execution permissions to the Composer service account.
 resource "google_project_iam_member" "composer_bigquery_job_user" {
   count = local.composer_grant_bigquery_job_user ? 1 : 0
@@ -283,6 +298,20 @@ resource "google_bigquery_dataset_iam_member" "composer_bigquery_data_editor" {
   dataset_id = each.value
   role       = "roles/bigquery.dataEditor"
   member     = "serviceAccount:${google_service_account.composer.email}"
+}
+
+resource "google_storage_bucket_iam_member" "composer_landing_bucket_object_admin" {
+  bucket = var.landing_bucket_name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.composer.email}"
+}
+
+resource "google_storage_bucket_iam_member" "composer_bronze_parquet_bucket_object_admin" {
+  count = var.bronze_parquet_bucket_name == null ? 0 : 1
+
+  bucket = var.bronze_parquet_bucket_name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.composer.email}"
 }
 
 # Allow Composer service agent to operate the Composer service account.
@@ -334,8 +363,12 @@ module "composer_environment" {
 
   depends_on = [
     google_project_iam_member.composer_worker,
+    google_project_iam_member.composer_project_roles,
     google_project_iam_member.composer_bigquery_job_user,
     google_bigquery_dataset_iam_member.composer_bigquery_data_editor,
+    google_storage_bucket_iam_member.composer_landing_bucket_object_admin,
+    google_storage_bucket_iam_member.composer_bronze_parquet_bucket_object_admin,
+    google_service_account_iam_member.composer_dataform_execution_act_as,
     google_service_account_iam_member.composer_service_agent_extension,
     module.dags_bucket,
   ]
@@ -551,6 +584,15 @@ resource "google_project_service_identity" "dataform_service_agent" {
   service = "dataform.googleapis.com"
 }
 
+resource "google_service_account" "dataform_execution" {
+  count = local.dataform_enabled && local.dataform_execution_service_account_id != null ? 1 : 0
+
+  project      = var.project_id
+  account_id   = local.dataform_execution_service_account_id
+  display_name = "Dataform Execution Service Account (${var.environment})"
+  description  = "Service account used by Dataform workflows in ${var.service_name}-${var.environment}."
+}
+
 # Wait for Dataform service-agent propagation before applying IAM bindings.
 resource "time_sleep" "dataform_service_agent_propagation" {
   count = local.dataform_enabled ? 1 : 0
@@ -566,7 +608,7 @@ resource "google_project_iam_member" "dataform_bigquery_job_user" {
 
   project = var.project_id
   role    = "roles/bigquery.jobUser"
-  member  = google_project_service_identity.dataform_service_agent[0].member
+  member  = local.dataform_execution_service_account_id == null ? google_project_service_identity.dataform_service_agent[0].member : "serviceAccount:${google_service_account.dataform_execution[0].email}"
 
   depends_on = [time_sleep.dataform_service_agent_propagation]
 }
@@ -577,9 +619,17 @@ resource "google_project_iam_member" "dataform_bigquery_data_editor" {
 
   project = var.project_id
   role    = "roles/bigquery.dataEditor"
-  member  = google_project_service_identity.dataform_service_agent[0].member
+  member  = local.dataform_execution_service_account_id == null ? google_project_service_identity.dataform_service_agent[0].member : "serviceAccount:${google_service_account.dataform_execution[0].email}"
 
   depends_on = [time_sleep.dataform_service_agent_propagation]
+}
+
+resource "google_storage_bucket_iam_member" "dataform_execution_bronze_parquet_bucket_viewer" {
+  count = local.dataform_enabled && local.dataform_execution_service_account_id != null && var.bronze_parquet_bucket_name != null ? 1 : 0
+
+  bucket = var.bronze_parquet_bucket_name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.dataform_execution[0].email}"
 }
 
 # Grant Dataform service agent access to the Git PAT secret.
@@ -594,6 +644,24 @@ resource "google_secret_manager_secret_iam_member" "dataform_gitlab_pat_accessor
   depends_on = [time_sleep.dataform_service_agent_propagation]
 }
 
+resource "google_service_account_iam_member" "dataform_service_agent_execution_act_as" {
+  count = local.dataform_enabled && local.dataform_execution_service_account_id != null ? 1 : 0
+
+  service_account_id = google_service_account.dataform_execution[0].name
+  role               = "roles/iam.serviceAccountUser"
+  member             = google_project_service_identity.dataform_service_agent[0].member
+
+  depends_on = [time_sleep.dataform_service_agent_propagation]
+}
+
+resource "google_service_account_iam_member" "composer_dataform_execution_act_as" {
+  count = local.dataform_enabled && local.dataform_execution_service_account_id != null ? 1 : 0
+
+  service_account_id = google_service_account.dataform_execution[0].name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.composer.email}"
+}
+
 # Create Dataform repository connected to external Git over HTTPS.
 resource "google_dataform_repository" "this" {
   provider = google-beta
@@ -603,6 +671,7 @@ resource "google_dataform_repository" "this" {
   region          = var.region
   name            = local.dataform_repository_name
   deletion_policy = "FORCE"
+  service_account = try(google_service_account.dataform_execution[0].email, null)
 
   git_remote_settings {
     url                                 = local.dataform_git_remote_url
@@ -610,7 +679,10 @@ resource "google_dataform_repository" "this" {
     authentication_token_secret_version = local.dataform_git_token_secret_version_resource
   }
 
-  depends_on = [google_secret_manager_secret_iam_member.dataform_gitlab_pat_accessor]
+  depends_on = [
+    google_secret_manager_secret_iam_member.dataform_gitlab_pat_accessor,
+    google_service_account_iam_member.dataform_service_agent_execution_act_as,
+  ]
 }
 
 # Create Dataform release config to pin compilation to an environment branch.

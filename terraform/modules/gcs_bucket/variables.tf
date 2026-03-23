@@ -31,6 +31,13 @@ variable "versioning_enabled" {
   default     = true
 }
 
+variable "delete_noncurrent_versions_after_days" {
+  description = "Optional lifecycle rule that deletes noncurrent object versions after the given number of days."
+  type        = number
+  default     = null
+  nullable    = true
+}
+
 variable "public_access_prevention" {
   description = "Public access prevention mode."
   type        = string

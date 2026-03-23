@@ -118,6 +118,11 @@ output "dataform_service_agent_email" {
   value       = module.orchestration.dataform_service_agent_email
 }
 
+output "dataform_execution_service_account_email" {
+  description = "User-managed Dataform execution service account email."
+  value       = module.orchestration.dataform_execution_service_account_email
+}
+
 output "dataform_git_remote_url" {
   description = "Configured external Git remote URL for Dataform."
   value       = module.orchestration.dataform_git_remote_url

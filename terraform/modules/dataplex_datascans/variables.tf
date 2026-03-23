@@ -16,12 +16,7 @@ variable "labels" {
 
 variable "dataset_ids_by_layer" {
   description = "BigQuery dataset ids keyed by medallion layer."
-  type = object({
-    raw    = string
-    bronze = string
-    silver = string
-    gold   = string
-  })
+  type        = map(string)
 }
 
 variable "datascans" {

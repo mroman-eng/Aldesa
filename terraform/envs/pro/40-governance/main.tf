@@ -15,12 +15,24 @@ data "terraform_remote_state" "storage_bq" {
 }
 
 locals {
-  source_resources = {
-    raw_dataset_id    = coalesce(try(var.governed_resources.raw_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.raw_dataset_id)
-    bronze_dataset_id = coalesce(try(var.governed_resources.bronze_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.bronze_dataset_id)
-    silver_dataset_id = coalesce(try(var.governed_resources.silver_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.silver_dataset_id)
-    gold_dataset_id   = coalesce(try(var.governed_resources.gold_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.gold_dataset_id)
-  }
+  raw_dataset_id = try(
+    coalesce(
+      try(var.governed_resources.raw_dataset_id, null),
+      try(data.terraform_remote_state.storage_bq.outputs.raw_dataset_id, null)
+    ),
+    null
+  )
+
+  source_resources = merge(
+    local.raw_dataset_id == null ? {} : {
+      raw_dataset_id = local.raw_dataset_id
+    },
+    {
+      bronze_dataset_id = coalesce(try(var.governed_resources.bronze_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.bronze_dataset_id)
+      silver_dataset_id = coalesce(try(var.governed_resources.silver_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.silver_dataset_id)
+      gold_dataset_id   = coalesce(try(var.governed_resources.gold_dataset_id, null), data.terraform_remote_state.storage_bq.outputs.gold_dataset_id)
+    }
+  )
 
   auto_profile_scan_table_ids_by_layer = {
     raw    = keys(coalesce(try(data.terraform_remote_state.storage_bq.outputs.raw_table_ids, null), {}))

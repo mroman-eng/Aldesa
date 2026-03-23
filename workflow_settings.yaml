@@ -1,4 +1,6 @@
 defaultProject: data-buildtrack-dev
 defaultDataset: dataform
-defaultAssertionDataset: dataform_assertions
+defaultAssertionDataset: pre_assertions
 dataformCoreVersion: 3.0.42
+vars:
+  env: "dev"

@@ -174,11 +174,12 @@ output "landing_to_composer_eventarc_service_account_email" {
 output "dataform_config" {
   description = "Effective Dataform configuration."
   value = {
-    enabled                   = local.dataform_enabled
-    git_remote_default_branch = local.dataform_git_remote_default_branch
-    git_remote_url            = local.dataform_git_remote_url
-    git_token_secret_name     = local.dataform_git_token_secret_name
-    git_token_secret_version  = local.dataform_git_token_secret_version
+    enabled                      = local.dataform_enabled
+    execution_service_account_id = local.dataform_execution_service_account_id
+    git_remote_default_branch    = local.dataform_git_remote_default_branch
+    git_remote_url               = local.dataform_git_remote_url
+    git_token_secret_name        = local.dataform_git_token_secret_name
+    git_token_secret_version     = local.dataform_git_token_secret_version
     release_config = {
       code_compilation_config = local.dataform_release_compilation_cfg
       cron_schedule           = local.dataform_release_cron_schedule
@@ -210,6 +211,11 @@ output "dataform_repository_name" {
 output "dataform_service_agent_email" {
   description = "Dataform service agent email for this project."
   value       = try(google_project_service_identity.dataform_service_agent[0].email, null)
+}
+
+output "dataform_execution_service_account_email" {
+  description = "User-managed Dataform execution service account email."
+  value       = try(google_service_account.dataform_execution[0].email, null)
 }
 
 output "dataform_git_remote_url" {

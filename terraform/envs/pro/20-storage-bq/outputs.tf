@@ -13,6 +13,16 @@ output "landing_bucket_name" {
   value       = module.storage_bq.landing_bucket_name
 }
 
+output "bronze_parquet_bucket_config" {
+  description = "Effective bronze parquet bucket configuration."
+  value       = module.storage_bq.bronze_parquet_bucket_config
+}
+
+output "bronze_parquet_bucket_name" {
+  description = "Bronze parquet bucket name."
+  value       = module.storage_bq.bronze_parquet_bucket_name
+}
+
 output "datasphere_ingest_service_account_email" {
   description = "Dedicated SAP Datasphere ingestion service account email."
   value       = module.storage_bq.datasphere_ingest_service_account_email
@@ -51,6 +61,11 @@ output "raw_dataset_id" {
 output "logs_dataset_id" {
   description = "Logs dataset id."
   value       = module.storage_bq.logs_dataset_id
+}
+
+output "assertions_dataset_id" {
+  description = "Assertions dataset id."
+  value       = module.storage_bq.assertions_dataset_id
 }
 
 output "bronze_dataset_id" {

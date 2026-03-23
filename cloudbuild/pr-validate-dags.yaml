@@ -12,12 +12,12 @@ availableSecrets:
       env: GITHUB_PR_COMMENT_TOKEN
 
 steps:
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  - name: python:3.11-slim
     entrypoint: bash
     secretEnv:
       - GITHUB_PR_COMMENT_TOKEN
     env:
-      - PR_RESULT_DIR=/workspace/.cloudbuild/pr-validation/dataform
+      - PR_RESULT_DIR=/workspace/.cloudbuild/pr-validation/dags
       - CB_PROJECT_ID=${PROJECT_ID}
       - CB_BUILD_ID=${BUILD_ID}
       - CB_LOCATION=${LOCATION}
@@ -30,6 +30,6 @@ steps:
       - -ceu
       - |
         ./cloudbuild/scripts/install_github_comment_tools.sh
-        ./cloudbuild/scripts/pr_validate_dataform.sh
+        ./cloudbuild/scripts/pr_validate_dags.sh
         ./cloudbuild/scripts/upsert_github_pr_comment.sh
         ./cloudbuild/scripts/finalize_pr_validation_status.sh

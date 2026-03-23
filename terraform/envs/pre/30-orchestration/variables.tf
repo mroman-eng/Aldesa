@@ -117,11 +117,12 @@ variable "dags_bucket" {
 variable "dataform" {
   description = "Dataform repository, secret and scheduling settings."
   type = object({
-    enabled                   = optional(bool)
-    git_remote_default_branch = optional(string)
-    git_remote_url            = optional(string)
-    git_token_secret_name     = optional(string)
-    git_token_secret_version  = optional(string)
+    enabled                      = optional(bool)
+    execution_service_account_id = optional(string)
+    git_remote_default_branch    = optional(string)
+    git_remote_url               = optional(string)
+    git_token_secret_name        = optional(string)
+    git_token_secret_version     = optional(string)
     release_config = optional(object({
       cron_schedule = optional(string)
       enabled       = optional(bool)

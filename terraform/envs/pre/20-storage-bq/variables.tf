@@ -44,6 +44,25 @@ variable "landing_bucket" {
   }
 }
 
+variable "bronze_parquet_bucket" {
+  description = "Bronze parquet historical bucket settings."
+  type = object({
+    delete_noncurrent_versions_after_days = optional(number)
+    force_destroy                         = optional(bool)
+    location                              = optional(string)
+    name                                  = optional(string)
+    public_access_prevention              = optional(string)
+    storage_class                         = optional(string)
+    versioning_enabled                    = optional(bool)
+  })
+  default = {}
+
+  validation {
+    condition     = try(var.bronze_parquet_bucket.name, null) == null || can(regex("^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", var.bronze_parquet_bucket.name))
+    error_message = "bronze_parquet_bucket.name must be a valid GCS bucket name."
+  }
+}
+
 variable "enable_datasphere_ingest_service_account" {
   description = "Create a dedicated service account for SAP Datasphere parquet ingestion."
   type        = bool
@@ -93,12 +112,13 @@ variable "bigquery_location_override" {
 variable "dataset_ids" {
   description = "Dataset ids keyed by data layer."
   type = object({
-    alerts = optional(string)
-    logs   = optional(string)
-    raw    = optional(string)
-    bronze = optional(string)
-    gold   = optional(string)
-    silver = optional(string)
+    alerts     = optional(string)
+    assertions = optional(string)
+    logs       = optional(string)
+    raw        = optional(string)
+    bronze     = optional(string)
+    gold       = optional(string)
+    silver     = optional(string)
   })
   default = {}
 
@@ -106,6 +126,7 @@ variable "dataset_ids" {
     condition = alltrue([
       for dataset_id in [
         try(var.dataset_ids.alerts, null),
+        try(var.dataset_ids.assertions, null),
         try(var.dataset_ids.logs, null),
         try(var.dataset_ids.raw, null),
         try(var.dataset_ids.bronze, null),

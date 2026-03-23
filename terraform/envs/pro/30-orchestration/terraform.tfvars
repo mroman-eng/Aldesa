@@ -23,9 +23,11 @@ composer = {
   environment_name         = "pro-data-buildtrack-pro-orchestrator-sap-europe-west1"
   airflow_config_overrides = {}
   env_variables = {
-    GCP_PROJECT_ID = "data-buildtrack-pro"
-    GCP_LOCATION   = "europe-west1"
-    LANDING_BUCKET = "pro-data-buildtrack-pro-ingesta-sap-europe-west1"
+    GCP_PROJECT_ID     = "data-buildtrack-pro"
+    GCP_LOCATION       = "europe-west1"
+    LANDING_BUCKET     = "pro-data-buildtrack-pro-ingesta-sap-europe-west1"
+    DATASET_EVENT_URI  = "gs://pro-data-buildtrack-pro-ingesta-sap-europe-west1/"
+    OBJECT_NAME_PREFIX = ""
   }
   service_account_id         = "cmp-pro-aldesa-buildtrack"
   environment_size           = "ENVIRONMENT_SIZE_SMALL"
@@ -55,7 +57,7 @@ composer = {
 
 composer_bigquery_access = {
   grant_job_user          = true
-  dataset_data_editor_ids = ["pro_raw", "pro_bronze", "pro_silver", "pro_gold", "pro_logs"]
+  dataset_data_editor_ids = ["pro_bronze", "pro_silver", "pro_gold", "pro_assertions"]
 }
 
 dags_bucket = {
@@ -65,12 +67,13 @@ dags_bucket = {
 }
 
 dataform = {
-  enabled                   = true
-  repository_name           = "pro-data-buildtrack-pro-dataform-sap-europe-west1"
-  git_remote_url            = "https://github.com/GrupoAldesa/build-track-gcp-dataops.git"
-  git_remote_default_branch = "main"
-  git_token_secret_name     = "sec-aldesa-buildtrack-pro-dataform-github-pat"
-  git_token_secret_version  = "latest"
+  enabled                      = true
+  execution_service_account_id = "dfm-pro-aldesa-buildtrack"
+  repository_name              = "pro-data-buildtrack-pro-dataform-sap-europe-west1"
+  git_remote_url               = "https://github.com/GrupoAldesa/build-track-gcp-dataops.git"
+  git_remote_default_branch    = "main"
+  git_token_secret_name        = "sec-aldesa-buildtrack-pro-dataform-github-pat"
+  git_token_secret_version     = "latest"
   release_config = {
     enabled       = true
     name          = "dfrc-aldesa-buildtrack-pro"
@@ -78,10 +81,12 @@ dataform = {
     cron_schedule = null
     time_zone     = "UTC"
     code_compilation_config = {
-      assertion_schema = "bronze_assertions"
+      assertion_schema = "pro_assertions"
       default_database = "data-buildtrack-pro"
       default_location = "europe-west1"
       default_schema   = "pro_bronze"
+      schema_suffix    = null
+      table_prefix     = null
       vars             = {}
     }
   }
@@ -112,10 +117,13 @@ landing_to_composer_trigger = {
   max_instance_count               = 100
   max_instance_request_concurrency = 80
   ingress_settings                 = "ALLOW_ALL"
-  object_name_prefix               = "raw/sap/"
+  object_name_prefix               = ""
   retry_policy                     = "RETRY_POLICY_DO_NOT_RETRY"
   eventarc_receiver_project_role   = true
-  environment_variables            = {}
+  environment_variables = {
+    DATASET_EVENT_URI  = "gs://pro-data-buildtrack-pro-ingesta-sap-europe-west1/"
+    OBJECT_NAME_PREFIX = ""
+  }
   # Eventarc creates the push subscription automatically.
   # Keep this block enabled from day one; leave subscription_name = null.
   # The orchestration make targets auto-discover/import the subscription after the trigger exists.

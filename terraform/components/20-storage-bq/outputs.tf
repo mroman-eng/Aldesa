@@ -20,6 +20,24 @@ output "landing_bucket_name" {
   value       = module.landing_bucket.name
 }
 
+output "bronze_parquet_bucket_config" {
+  description = "Effective bronze parquet bucket configuration."
+  value = {
+    delete_noncurrent_versions_after_days = local.bronze_parquet_bucket_delete_noncurrent_versions_after_days
+    force_destroy                         = local.bronze_parquet_bucket_force_destroy
+    location                              = local.bronze_parquet_bucket_location
+    name                                  = local.bronze_parquet_bucket_name
+    public_access_prevention              = lower(local.bronze_parquet_bucket_public_access_prevention)
+    storage_class                         = local.bronze_parquet_bucket_storage_class
+    versioning_enabled                    = local.bronze_parquet_bucket_versioning_enabled
+  }
+}
+
+output "bronze_parquet_bucket_name" {
+  description = "Bronze parquet bucket name."
+  value       = module.bronze_parquet_bucket.name
+}
+
 output "datasphere_ingest_service_account_email" {
   description = "Dedicated SAP Datasphere ingestion service account email."
   value       = try(google_service_account.datasphere_ingest[0].email, null)
@@ -43,12 +61,13 @@ output "dataform_git_token_secret_resource" {
 output "dataset_ids" {
   description = "Effective dataset ids by data layer."
   value = {
-    alerts = local.alerts_dataset_id
-    logs   = local.logs_dataset_id
-    raw    = local.raw_dataset_id
-    bronze = local.bronze_dataset_id
-    silver = local.silver_dataset_id
-    gold   = local.gold_dataset_id
+    alerts     = local.alerts_dataset_id
+    assertions = local.assertions_dataset_id
+    logs       = local.logs_dataset_id
+    raw        = local.raw_dataset_id
+    bronze     = local.bronze_dataset_id
+    silver     = local.silver_dataset_id
+    gold       = local.gold_dataset_id
   }
 }
 
@@ -65,6 +84,11 @@ output "raw_dataset_id" {
 output "alerts_dataset_id" {
   description = "Alerts dataset id."
   value       = local.alerts_dataset_id
+}
+
+output "assertions_dataset_id" {
+  description = "Assertions dataset id."
+  value       = local.assertions_dataset_id
 }
 
 output "logs_dataset_id" {

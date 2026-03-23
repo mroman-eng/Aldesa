@@ -32,6 +32,12 @@ locals {
     {}
   )
   composer_config = merge(var.composer, {
+    env_variables = merge(
+      try(var.composer.env_variables, {}),
+      try(data.terraform_remote_state.storage_bq.outputs.bronze_parquet_bucket_name, null) == null ? {} : {
+        BRONZE_PARQUET_BUCKET = data.terraform_remote_state.storage_bq.outputs.bronze_parquet_bucket_name
+      }
+    ),
     pypi_packages = merge(try(var.composer.pypi_packages, {}), local.composer_requirements_pypi_packages)
   })
   composer_bigquery_access_config = merge(
@@ -118,9 +124,10 @@ module "orchestration" {
   service_name      = var.service_name
   additional_labels = var.additional_labels
 
-  network_self_link    = data.terraform_remote_state.foundation.outputs.network_self_link
-  subnetwork_self_link = data.terraform_remote_state.foundation.outputs.subnetwork_self_link
-  landing_bucket_name  = data.terraform_remote_state.storage_bq.outputs.landing_bucket_name
+  network_self_link          = data.terraform_remote_state.foundation.outputs.network_self_link
+  subnetwork_self_link       = data.terraform_remote_state.foundation.outputs.subnetwork_self_link
+  landing_bucket_name        = data.terraform_remote_state.storage_bq.outputs.landing_bucket_name
+  bronze_parquet_bucket_name = try(data.terraform_remote_state.storage_bq.outputs.bronze_parquet_bucket_name, null)
 
   composer                    = local.composer_config
   composer_bigquery_access    = local.composer_bigquery_access_config

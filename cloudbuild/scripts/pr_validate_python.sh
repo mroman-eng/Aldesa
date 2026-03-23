@@ -27,7 +27,7 @@ declare -a PYTHON_FILES=()
 
 while IFS= read -r changed_file; do
   case "${changed_file}" in
-    dags/*|functions/*)
+    functions/*)
       if [[ "${changed_file}" == *.py ]] && [ -f "${changed_file}" ]; then
         printf '%s\n' "${changed_file}" >>"${SELECTED_FILES_FILE}"
       fi
@@ -69,7 +69,7 @@ if [ "${RELEVANT_CHANGES}" = "true" ]; then
 else
   COMPILE_STATUS="SUCCESS"
   RUFF_STATUS="SUCCESS"
-  printf 'No changed Python source files detected under dags/ or functions/ for this PR.\n' >"${NOOP_LOG_FILE}"
+  printf 'No changed Python source files detected under functions/ for this PR.\n' >"${NOOP_LOG_FILE}"
 fi
 
 {

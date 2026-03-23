@@ -15,12 +15,13 @@ locals {
 
   bigquery_location = coalesce(var.bigquery_location_override, var.region)
 
-  alerts_dataset_id = coalesce(try(var.dataset_ids.alerts, null), "alerts")
-  logs_dataset_id   = coalesce(try(var.dataset_ids.logs, null), "logs")
-  raw_dataset_id    = coalesce(try(var.dataset_ids.raw, null), "raw")
-  bronze_dataset_id = coalesce(try(var.dataset_ids.bronze, null), "bronze")
-  silver_dataset_id = coalesce(try(var.dataset_ids.silver, null), "silver")
-  gold_dataset_id   = coalesce(try(var.dataset_ids.gold, null), "gold")
+  alerts_dataset_id     = try(var.dataset_ids.alerts, null)
+  assertions_dataset_id = try(var.dataset_ids.assertions, null)
+  logs_dataset_id       = try(var.dataset_ids.logs, null)
+  raw_dataset_id        = try(var.dataset_ids.raw, null)
+  bronze_dataset_id     = coalesce(try(var.dataset_ids.bronze, null), "bronze")
+  silver_dataset_id     = coalesce(try(var.dataset_ids.silver, null), "silver")
+  gold_dataset_id       = coalesce(try(var.dataset_ids.gold, null), "gold")
 
   landing_bucket_name                     = coalesce(try(var.landing_bucket.name, null), "${var.project_id}${local.naming_environment_token}-ingesta-sap-${var.region}")
   landing_bucket_location                 = coalesce(try(var.landing_bucket.location, null), var.region)
@@ -28,6 +29,17 @@ locals {
   landing_bucket_force_destroy            = coalesce(try(var.landing_bucket.force_destroy, null), false)
   landing_bucket_versioning_enabled       = coalesce(try(var.landing_bucket.versioning_enabled, null), true)
   landing_bucket_public_access_prevention = coalesce(try(var.landing_bucket.public_access_prevention, null), "enforced")
+
+  bronze_parquet_bucket_name = coalesce(
+    try(var.bronze_parquet_bucket.name, null),
+    "${var.project_id}${local.naming_environment_token}-bronze-parquet-${var.region}"
+  )
+  bronze_parquet_bucket_location                              = coalesce(try(var.bronze_parquet_bucket.location, null), var.region)
+  bronze_parquet_bucket_storage_class                         = coalesce(try(var.bronze_parquet_bucket.storage_class, null), "STANDARD")
+  bronze_parquet_bucket_force_destroy                         = coalesce(try(var.bronze_parquet_bucket.force_destroy, null), false)
+  bronze_parquet_bucket_versioning_enabled                    = coalesce(try(var.bronze_parquet_bucket.versioning_enabled, null), true)
+  bronze_parquet_bucket_public_access_prevention              = coalesce(try(var.bronze_parquet_bucket.public_access_prevention, null), "enforced")
+  bronze_parquet_bucket_delete_noncurrent_versions_after_days = try(var.bronze_parquet_bucket.delete_noncurrent_versions_after_days, null)
 
   datasphere_ingest_sa_id = coalesce(
     var.datasphere_ingest_sa_id_override,
@@ -49,7 +61,7 @@ locals {
   alerts_table_ids = toset(keys(var.alerts_tables))
   logs_table_ids   = toset(keys(var.logs_tables))
 
-  raw_table_definitions = {
+  raw_table_definitions = local.raw_dataset_id == null ? {} : {
     for table_id, table in var.raw_tables : "raw:${table_id}" => {
       dataset_id               = local.raw_dataset_id
       table_id                 = table_id
@@ -105,7 +117,7 @@ locals {
     }
   }
 
-  alerts_table_definitions = {
+  alerts_table_definitions = local.alerts_dataset_id == null ? {} : {
     for table_id, table in var.alerts_tables : "alerts:${table_id}" => {
       dataset_id               = local.alerts_dataset_id
       table_id                 = table_id
@@ -119,7 +131,7 @@ locals {
     }
   }
 
-  logs_table_definitions = {
+  logs_table_definitions = local.logs_dataset_id == null ? {} : {
     for table_id, table in var.logs_tables : "logs:${table_id}" => {
       dataset_id               = local.logs_dataset_id
       table_id                 = table_id
@@ -133,7 +145,7 @@ locals {
     }
   }
 
-  raw_view_definitions = {
+  raw_view_definitions = local.raw_dataset_id == null ? {} : {
     for table_id, table in var.raw_tables : "raw:v_${table_id}" => {
       dataset_id        = local.raw_dataset_id
       table_id          = "v_${table_id}"
@@ -169,7 +181,7 @@ locals {
     } if table.create_view
   }
 
-  alerts_view_definitions = {
+  alerts_view_definitions = local.alerts_dataset_id == null ? {} : {
     for table_id, table in var.alerts_tables : "alerts:v_${table_id}" => {
       dataset_id        = local.alerts_dataset_id
       table_id          = "v_${table_id}"
@@ -178,7 +190,7 @@ locals {
     } if table.create_view
   }
 
-  logs_view_definitions = {
+  logs_view_definitions = local.logs_dataset_id == null ? {} : {
     for table_id, table in var.logs_tables : "logs:v_${table_id}" => {
       dataset_id        = local.logs_dataset_id
       table_id          = "v_${table_id}"
@@ -215,17 +227,32 @@ check "generated_names_are_valid" {
   }
 
   assert {
-    condition     = can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.raw_dataset_id)) && length(local.raw_dataset_id) <= 1024
+    condition     = can(regex("^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", local.bronze_parquet_bucket_name))
+    error_message = "Bronze parquet bucket name is invalid. Set bronze_parquet_bucket.name with a valid bucket name."
+  }
+
+  assert {
+    condition     = lower(local.bronze_parquet_bucket_location) == lower(local.bigquery_location)
+    error_message = "bronze_parquet_bucket.location must match the BigQuery location used by the medallion datasets."
+  }
+
+  assert {
+    condition     = local.raw_dataset_id == null || (can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.raw_dataset_id)) && length(local.raw_dataset_id) <= 1024)
     error_message = "Raw dataset id is invalid. Set dataset_ids.raw with a valid dataset id."
   }
 
   assert {
-    condition     = can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.alerts_dataset_id)) && length(local.alerts_dataset_id) <= 1024
+    condition     = local.alerts_dataset_id == null || (can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.alerts_dataset_id)) && length(local.alerts_dataset_id) <= 1024)
     error_message = "Alerts dataset id is invalid. Set dataset_ids.alerts with a valid dataset id."
   }
 
   assert {
-    condition     = can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.logs_dataset_id)) && length(local.logs_dataset_id) <= 1024
+    condition     = local.assertions_dataset_id == null || (can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.assertions_dataset_id)) && length(local.assertions_dataset_id) <= 1024)
+    error_message = "Assertions dataset id is invalid. Set dataset_ids.assertions with a valid dataset id."
+  }
+
+  assert {
+    condition     = local.logs_dataset_id == null || (can(regex("^[A-Za-z_][A-Za-z0-9_]*$", local.logs_dataset_id)) && length(local.logs_dataset_id) <= 1024)
     error_message = "Logs dataset id is invalid. Set dataset_ids.logs with a valid dataset id."
   }
 
@@ -262,6 +289,20 @@ module "landing_bucket" {
   versioning_enabled       = local.landing_bucket_versioning_enabled
   public_access_prevention = lower(local.landing_bucket_public_access_prevention)
   labels                   = local.common_labels
+}
+
+module "bronze_parquet_bucket" {
+  source = "../../modules/gcs_bucket"
+
+  project_id                            = var.project_id
+  name                                  = local.bronze_parquet_bucket_name
+  location                              = local.bronze_parquet_bucket_location
+  storage_class                         = local.bronze_parquet_bucket_storage_class
+  force_destroy                         = local.bronze_parquet_bucket_force_destroy
+  versioning_enabled                    = local.bronze_parquet_bucket_versioning_enabled
+  delete_noncurrent_versions_after_days = local.bronze_parquet_bucket_delete_noncurrent_versions_after_days
+  public_access_prevention              = lower(local.bronze_parquet_bucket_public_access_prevention)
+  labels                                = local.common_labels
 }
 
 # Create dedicated service account for SAP Datasphere ingestion.
@@ -309,13 +350,13 @@ resource "google_secret_manager_secret" "dataform_git_token" {
   }
 }
 
-# Create layered datasets in BigQuery (raw, bronze, silver, gold).
+# Create layered datasets in BigQuery.
 module "medallion_datasets" {
   source = "../../modules/bigquery_datasets"
 
   project_id                  = var.project_id
   location                    = local.bigquery_location
-  dataset_ids                 = [local.alerts_dataset_id, local.logs_dataset_id, local.raw_dataset_id, local.bronze_dataset_id, local.silver_dataset_id, local.gold_dataset_id]
+  dataset_ids                 = compact([local.alerts_dataset_id, local.assertions_dataset_id, local.logs_dataset_id, local.raw_dataset_id, local.bronze_dataset_id, local.silver_dataset_id, local.gold_dataset_id])
   delete_contents_on_destroy  = var.bq_dataset_delete_contents_on_destroy
   default_table_expiration_ms = var.bq_default_table_expiration_ms
   labels                      = local.common_labels

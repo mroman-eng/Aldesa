@@ -63,7 +63,7 @@ variable "additional_labels" {
 variable "source_resources" {
   description = "BigQuery dataset ids used as DataScan targets by medallion layer."
   type = object({
-    raw_dataset_id    = string
+    raw_dataset_id    = optional(string)
     bronze_dataset_id = string
     silver_dataset_id = string
     gold_dataset_id   = string
@@ -72,24 +72,28 @@ variable "source_resources" {
   validation {
     condition = alltrue([
       for dataset_id in [
-        var.source_resources.raw_dataset_id,
+        try(var.source_resources.raw_dataset_id, null),
         var.source_resources.bronze_dataset_id,
         var.source_resources.silver_dataset_id,
         var.source_resources.gold_dataset_id,
-      ] :
-      can(regex("^[A-Za-z_][A-Za-z0-9_]*$", dataset_id)) && length(dataset_id) <= 1024
+      ] : dataset_id == null || (can(regex("^[A-Za-z_][A-Za-z0-9_]*$", dataset_id)) && length(dataset_id) <= 1024)
     ])
     error_message = "source_resources dataset ids must follow BigQuery dataset naming rules."
   }
 
   validation {
-    condition = length(toset([
-      var.source_resources.raw_dataset_id,
+    condition = length(toset(compact([
+      try(var.source_resources.raw_dataset_id, null),
       var.source_resources.bronze_dataset_id,
       var.source_resources.silver_dataset_id,
       var.source_resources.gold_dataset_id,
-    ])) == 4
-    error_message = "source_resources raw/bronze/silver/gold dataset ids must be unique."
+      ]))) == length(compact([
+      try(var.source_resources.raw_dataset_id, null),
+      var.source_resources.bronze_dataset_id,
+      var.source_resources.silver_dataset_id,
+      var.source_resources.gold_dataset_id,
+    ]))
+    error_message = "source_resources dataset ids must be unique."
   }
 }
 
