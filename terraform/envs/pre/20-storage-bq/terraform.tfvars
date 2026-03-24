@@ -19,6 +19,7 @@ bronze_parquet_bucket = {
 
 datasphere_ingest_sa_id_override            = "dsp-aldesa-buildtrack-dev"
 datasphere_ingest_sa_key_secret_id_override = "dsp-aldesa-buildtrack-dev-sa-key"
+datasphere_landing_bucket_roles             = ["roles/storage.legacyBucketReader"] # Added on top of the default landing-bucket role: roles/storage.objectUser
 dataform_git_token_secret_id_override       = "sec-aldesa-buildtrack-dev-dataform-github-pat"
 
 dataset_ids = {
