@@ -30,6 +30,10 @@ def _normalized_object_prefix() -> str:
     return f"{prefix}/" if prefix else ""
 
 
+def _success_marker_name() -> str:
+    return os.getenv("SUCCESS_MARKER_NAME", "_SUCCESS")
+
+
 def _decode_pubsub_payload(cloud_event: CloudEvent) -> dict[str, Any]:
     encoded_payload = cloud_event.data["message"]["data"]
     return json.loads(base64.b64decode(encoded_payload).decode("utf-8"))
@@ -44,9 +48,17 @@ def _resolve_dataset_uri(bucket: str) -> str:
     return f"gs://{bucket}/" if not prefix else f"gs://{bucket}/{prefix}"
 
 
-def _build_event_payload(message_data: dict[str, Any]) -> dict[str, Any]:
+def _table_and_phase_from_prefix(batch_prefix: str) -> tuple[str | None, str | None]:
+    parts = [p for p in batch_prefix.split("/") if p]
+    table_name = parts[0] if len(parts) >= 1 else None
+    phase = parts[1] if len(parts) >= 2 else None
+    return table_name, phase
+
+
+def _build_event_payload(message_data: dict[str, Any], batch_prefix: str) -> dict[str, Any]:
     bucket = message_data["bucket"]
     object_name = message_data["name"]
+    table_name, phase = _table_and_phase_from_prefix(batch_prefix)
     dataset_uri = _resolve_dataset_uri(bucket)
 
     return {
@@ -61,6 +73,11 @@ def _build_event_payload(message_data: dict[str, Any]) -> dict[str, Any]:
             "md5_hash": message_data.get("md5Hash"),
             "metageneration": message_data.get("metageneration"),
             "object": object_name,
+            "sap_batch_prefix": batch_prefix,
+            "sap_metadata_uri": f"gs://{bucket}/{batch_prefix}/.sap.partfile.metadata",
+            "sap_phase": phase,
+            "sap_success_marker_name": _success_marker_name(),
+            "sap_table_name": table_name,
             "size": message_data.get("size"),
             "storage_class": message_data.get("storageClass"),
             "time_created": message_data.get("timeCreated"),
@@ -111,6 +128,7 @@ def trigger_dag(cloud_event: CloudEvent) -> None:
     message_data = _decode_pubsub_payload(cloud_event)
     object_name = message_data.get("name", "")
     bucket = message_data.get("bucket", "")
+    success_marker_name = _success_marker_name()
 
     if not bucket or not object_name:
         raise ValueError("Pub/Sub payload must contain 'bucket' and 'name'.")
@@ -128,11 +146,29 @@ def trigger_dag(cloud_event: CloudEvent) -> None:
         )
         return
 
-    payload = _build_event_payload(message_data)
+    object_basename = object_name.rsplit("/", 1)[-1]
+    if object_basename != success_marker_name:
+        LOGGER.info(
+            "Ignoring object '%s' because only '%s' triggers dataset events.",
+            object_name,
+            success_marker_name,
+        )
+        return
+
+    if "/" not in object_name:
+        LOGGER.warning(
+            "Ignoring success marker '%s' because it has no batch prefix.",
+            object_name,
+        )
+        return
+
+    batch_prefix = object_name.rsplit("/", 1)[0].strip("/")
+    payload = _build_event_payload(message_data, batch_prefix)
 
     LOGGER.info(
-        "Publishing dataset event for '%s' with dataset uri '%s'.",
+        "Publishing dataset event for '%s' (batch_prefix='%s') with dataset uri '%s'.",
         payload["extra"]["gcs_uri"],
+        payload["extra"]["sap_batch_prefix"],
         payload["dataset_uri"],
     )
     _post_dataset_event(payload)
