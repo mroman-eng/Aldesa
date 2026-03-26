@@ -21,10 +21,7 @@ storage_bq_remote_state = {
 composer = {
   image_version    = "composer-3-airflow-2.10.5-build.29"
   environment_name = "pre-data-buildtrack-dev-orchestrator-sap-europe-west1"
-  airflow_config_overrides = {
-    "email-email_backend" = "airflow.providers.sendgrid.utils.emailer.send_email"
-    "sendgrid-from_email" = "maypher.roman@vasscompany.com"
-  }
+  airflow_config_overrides = {}
   env_variables = {
     GCP_PROJECT_ID     = "data-buildtrack-dev"
     GCP_LOCATION       = "europe-west1"

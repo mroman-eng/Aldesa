@@ -19,7 +19,6 @@ cicd_dependencies = {
 }
 
 # Cloud Build CI/CD foundation: dedicated DAG sync SA + optional triggers.
-# Keep `repository_resource_name = null` until the client links GitHub with Cloud Build.
 cloudbuild = {
   enabled                                                      = true
   trigger_location                                             = "europe-southwest1"
@@ -29,7 +28,7 @@ cloudbuild = {
   grant_logging_log_writer_on_terraform_sa                     = true
 
   dags_sync_pipeline = {
-    enabled                    = false
+    enabled                    = true
     service_account_id         = null
     display_name               = "Cloud Build DAG sync (PRO)"
     grant_storage_object_admin = true

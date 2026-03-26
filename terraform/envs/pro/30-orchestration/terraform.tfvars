@@ -30,7 +30,7 @@ composer = {
     OBJECT_NAME_PREFIX = ""
   }
   service_account_id         = "cmp-pro-aldesa-buildtrack"
-  environment_size           = "ENVIRONMENT_SIZE_SMALL"
+  environment_size           = "ENVIRONMENT_SIZE_MEDIUM"
   scheduler_count            = 2
   scheduler_cpu              = 1
   scheduler_memory_gb        = 2
