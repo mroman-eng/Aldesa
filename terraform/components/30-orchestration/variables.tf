@@ -143,11 +143,17 @@ variable "landing_to_composer_trigger" {
     environment_variables            = optional(map(string))
     eventarc_receiver_project_role   = optional(bool)
     eventarc_subscription_tuning = optional(object({
-      enabled              = optional(bool)
-      subscription_name    = optional(string)
-      ack_deadline_seconds = optional(number)
-      minimum_backoff      = optional(string)
-      maximum_backoff      = optional(string)
+      enabled                                 = optional(bool)
+      subscription_name                       = optional(string)
+      ack_deadline_seconds                    = optional(number)
+      minimum_backoff                         = optional(string)
+      maximum_backoff                         = optional(string)
+      dead_letter_enabled                     = optional(bool)
+      dead_letter_topic_name                  = optional(string)
+      dead_letter_subscription_name           = optional(string)
+      dead_letter_max_delivery_attempts       = optional(number)
+      dead_letter_alert_enabled               = optional(bool)
+      dead_letter_alert_notification_channels = optional(list(string))
     }))
   })
   default = {}
@@ -216,6 +222,41 @@ variable "landing_to_composer_trigger" {
       )
     )
     error_message = "landing_to_composer_trigger.eventarc_subscription_tuning.ack_deadline_seconds must be between 10 and 600."
+  }
+
+  validation {
+    condition = (
+      try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_topic_name, null) == null ||
+      can(regex("^[A-Za-z][A-Za-z0-9._~+%-]{2,254}$", var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_topic_name))
+    )
+    error_message = "landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_topic_name must be a valid Pub/Sub topic id."
+  }
+
+  validation {
+    condition = (
+      try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_subscription_name, null) == null ||
+      can(regex("^[A-Za-z][A-Za-z0-9._~+%-]{2,254}$", var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_subscription_name))
+    )
+    error_message = "landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_subscription_name must be a valid Pub/Sub subscription id."
+  }
+
+  validation {
+    condition = (
+      try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_max_delivery_attempts, null) == null ||
+      (
+        var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_max_delivery_attempts >= 5 &&
+        var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_max_delivery_attempts <= 100
+      )
+    )
+    error_message = "landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_max_delivery_attempts must be between 5 and 100."
+  }
+
+  validation {
+    condition = alltrue([
+      for channel_id in coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_alert_notification_channels, null), []) :
+      can(regex("^projects/[^/]+/notificationChannels/[A-Za-z0-9_-]+$", channel_id))
+    ])
+    error_message = "landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_alert_notification_channels must contain Monitoring notification channel resource names (projects/*/notificationChannels/*)."
   }
 }
 

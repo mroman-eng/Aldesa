@@ -118,7 +118,7 @@ landing_to_composer_trigger = {
   max_instance_request_concurrency = 80
   ingress_settings                 = "ALLOW_ALL"
   object_name_prefix               = ""
-  retry_policy                     = "RETRY_POLICY_DO_NOT_RETRY"
+  retry_policy                     = "RETRY_POLICY_RETRY"
   eventarc_receiver_project_role   = true
   environment_variables = {
     DATASET_EVENT_URI  = "gs://pro-data-buildtrack-pro-ingesta-sap-europe-west1/"
@@ -128,10 +128,16 @@ landing_to_composer_trigger = {
   # Keep this block enabled from day one; leave subscription_name = null.
   # The orchestration make targets auto-discover/import the subscription after the trigger exists.
   eventarc_subscription_tuning = {
-    enabled              = true
-    subscription_name    = null
-    ack_deadline_seconds = 600
-    minimum_backoff      = "10s"
-    maximum_backoff      = "600s"
+    enabled                                 = true
+    subscription_name                       = null
+    ack_deadline_seconds                    = 600
+    minimum_backoff                         = "10s"
+    maximum_backoff                         = "600s"
+    dead_letter_enabled                     = true
+    dead_letter_topic_name                  = "pro-data-buildtrack-pro-ps-ingesta-sap-europe-west1-dlq"
+    dead_letter_subscription_name           = "pro-data-buildtrack-pro-ps-ingesta-sap-europe-west1-dlq-sub"
+    dead_letter_max_delivery_attempts       = 10
+    dead_letter_alert_enabled               = true
+    dead_letter_alert_notification_channels = []
   }
 }

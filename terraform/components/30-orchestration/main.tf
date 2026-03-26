@@ -130,10 +130,54 @@ locals {
     local.landing_to_composer_eventarc_sub_tuning_requested &&
     try(length(trimspace(local.landing_to_composer_eventarc_subscription_name)) > 0, false)
   )
-  landing_to_composer_eventarc_ack_deadline       = coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.ack_deadline_seconds, null), 600)
-  landing_to_composer_eventarc_min_backoff        = coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.minimum_backoff, null), "10s")
-  landing_to_composer_eventarc_max_backoff        = coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.maximum_backoff, null), "600s")
-  landing_to_composer_build_service_account_email = "${data.google_project.current.number}-compute@developer.gserviceaccount.com"
+  landing_to_composer_eventarc_ack_deadline = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.ack_deadline_seconds, null),
+    600
+  )
+  landing_to_composer_eventarc_min_backoff = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.minimum_backoff, null),
+    "10s"
+  )
+  landing_to_composer_eventarc_max_backoff = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.maximum_backoff, null),
+    "600s"
+  )
+  landing_to_composer_eventarc_dead_letter_requested = (
+    local.landing_to_composer_eventarc_sub_tuning_requested &&
+    coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_enabled, null), false)
+  )
+  landing_to_composer_eventarc_dead_letter_enabled = (
+    local.landing_to_composer_eventarc_sub_tuning_enabled &&
+    local.landing_to_composer_eventarc_dead_letter_requested
+  )
+  landing_to_composer_eventarc_dead_letter_topic_name = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_topic_name, null),
+    "${local.landing_to_composer_pubsub_topic}-dlq"
+  )
+  landing_to_composer_eventarc_dead_letter_subscription_name = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_subscription_name, null),
+    "${local.landing_to_composer_eventarc_dead_letter_topic_name}-sub"
+  )
+  landing_to_composer_eventarc_dead_letter_max_delivery_attempts = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_max_delivery_attempts, null),
+    10
+  )
+  landing_to_composer_eventarc_dead_letter_alert_requested = (
+    local.landing_to_composer_eventarc_dead_letter_requested &&
+    coalesce(try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_alert_enabled, null), true)
+  )
+  landing_to_composer_eventarc_dead_letter_alert_enabled = (
+    local.landing_to_composer_eventarc_dead_letter_enabled &&
+    local.landing_to_composer_eventarc_dead_letter_alert_requested
+  )
+  landing_to_composer_eventarc_dead_letter_alert_notification_channels = coalesce(
+    try(var.landing_to_composer_trigger.eventarc_subscription_tuning.dead_letter_alert_notification_channels, null),
+    []
+  )
+  landing_to_composer_pubsub_service_agent_email = "service-${data.google_project.current.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  landing_to_composer_build_service_account_email = (
+    "${data.google_project.current.number}-compute@developer.gserviceaccount.com"
+  )
 }
 
 # Validate generated Composer, bucket and Dataform names.
@@ -407,6 +451,35 @@ resource "google_pubsub_topic_iam_member" "landing_notifications_publisher" {
   member  = "serviceAccount:${data.google_storage_project_service_account.landing_notifications[0].email_address}"
 }
 
+# Optional dead-letter topic for Eventarc delivery subscription.
+resource "google_pubsub_topic" "landing_to_composer_eventarc_dead_letter" {
+  count = local.landing_to_composer_eventarc_dead_letter_requested ? 1 : 0
+
+  project = var.project_id
+  name    = local.landing_to_composer_eventarc_dead_letter_topic_name
+
+  labels = local.common_labels
+}
+
+# Optional subscription to inspect dead-lettered messages.
+resource "google_pubsub_subscription" "landing_to_composer_eventarc_dead_letter" {
+  count = local.landing_to_composer_eventarc_dead_letter_requested ? 1 : 0
+
+  project = var.project_id
+  name    = local.landing_to_composer_eventarc_dead_letter_subscription_name
+  topic   = google_pubsub_topic.landing_to_composer_eventarc_dead_letter[0].id
+}
+
+# Allow Pub/Sub service agent to forward undeliverable messages to DLQ topic.
+resource "google_pubsub_topic_iam_member" "landing_to_composer_eventarc_dead_letter_publisher" {
+  count = local.landing_to_composer_eventarc_dead_letter_requested ? 1 : 0
+
+  project = var.project_id
+  topic   = google_pubsub_topic.landing_to_composer_eventarc_dead_letter[0].name
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${local.landing_to_composer_pubsub_service_agent_email}"
+}
+
 # Create user-managed runtime service account for the Cloud Function.
 resource "google_service_account" "landing_to_composer_runtime" {
   count = local.landing_to_composer_trigger_enabled ? 1 : 0
@@ -565,11 +638,84 @@ resource "google_pubsub_subscription" "landing_to_composer_eventarc_delivery" {
     maximum_backoff = local.landing_to_composer_eventarc_max_backoff
   }
 
+  dynamic "dead_letter_policy" {
+    for_each = local.landing_to_composer_eventarc_dead_letter_enabled ? [1] : []
+    content {
+      dead_letter_topic     = google_pubsub_topic.landing_to_composer_eventarc_dead_letter[0].id
+      max_delivery_attempts = local.landing_to_composer_eventarc_dead_letter_max_delivery_attempts
+    }
+  }
+
   lifecycle {
     ignore_changes = [push_config]
   }
 
-  depends_on = [google_cloudfunctions2_function.landing_to_composer]
+  depends_on = [
+    google_cloudfunctions2_function.landing_to_composer,
+    google_pubsub_topic_iam_member.landing_to_composer_eventarc_dead_letter_publisher,
+  ]
+}
+
+# Allow Pub/Sub service agent to consume from source subscription when dead lettering is enabled.
+resource "google_pubsub_subscription_iam_member" "landing_to_composer_eventarc_delivery_dead_letter_subscriber" {
+  count = local.landing_to_composer_eventarc_dead_letter_enabled ? 1 : 0
+
+  project      = var.project_id
+  subscription = google_pubsub_subscription.landing_to_composer_eventarc_delivery[0].name
+  role         = "roles/pubsub.subscriber"
+  member       = "serviceAccount:${local.landing_to_composer_pubsub_service_agent_email}"
+}
+
+# Alert when Pub/Sub forwards messages from the Eventarc delivery subscription to DLQ.
+resource "google_monitoring_alert_policy" "landing_to_composer_eventarc_dead_letter_detected" {
+  count = local.landing_to_composer_eventarc_dead_letter_alert_enabled ? 1 : 0
+
+  project      = var.project_id
+  display_name = "Landing->Composer DLQ messages detected (${var.environment})"
+  combiner     = "OR"
+  enabled      = true
+
+  conditions {
+    display_name = "Dead-letter forwarding count > 0"
+    condition_threshold {
+      filter = join(" AND ", [
+        "resource.type = \"pubsub_subscription\"",
+        "resource.label.subscription_id = \"${local.landing_to_composer_eventarc_subscription_name}\"",
+        "metric.type = \"pubsub.googleapis.com/subscription/dead_letter_message_count\"",
+      ])
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0
+      duration        = "0s"
+
+      aggregations {
+        alignment_period   = "300s"
+        per_series_aligner = "ALIGN_SUM"
+      }
+
+      trigger {
+        count = 1
+      }
+    }
+  }
+
+  documentation {
+    mime_type = "text/markdown"
+    content = join("\n", [
+      "Dead-letter messages were detected in the Eventarc delivery subscription.",
+      "",
+      "Check:",
+      "1. Cloud Function logs for landing->Composer trigger failures.",
+      "2. Composer API availability and response codes.",
+      "3. DLQ subscription messages for root-cause analysis and replay.",
+    ])
+  }
+
+  notification_channels = local.landing_to_composer_eventarc_dead_letter_alert_notification_channels
+  user_labels           = local.common_labels
+
+  depends_on = [
+    google_pubsub_subscription.landing_to_composer_eventarc_delivery,
+  ]
 }
 
 # Ensure Dataform service agent exists in the project.

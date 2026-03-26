@@ -125,13 +125,20 @@ output "landing_to_composer_trigger_config" {
     retry_policy                     = local.landing_to_composer_retry_policy
     eventarc_receiver_project_role   = local.landing_to_composer_grant_eventarc_role
     eventarc_subscription_tuning = {
-      enabled              = local.landing_to_composer_eventarc_sub_tuning_requested
-      subscription_name    = local.landing_to_composer_eventarc_subscription_name
-      ack_deadline_seconds = local.landing_to_composer_eventarc_ack_deadline
-      minimum_backoff      = local.landing_to_composer_eventarc_min_backoff
-      maximum_backoff      = local.landing_to_composer_eventarc_max_backoff
-      managed_by_terraform = local.landing_to_composer_eventarc_sub_tuning_enabled
-      import_required      = local.landing_to_composer_eventarc_sub_tuning_requested && !local.landing_to_composer_eventarc_sub_tuning_enabled
+      enabled                                 = local.landing_to_composer_eventarc_sub_tuning_requested
+      subscription_name                       = local.landing_to_composer_eventarc_subscription_name
+      ack_deadline_seconds                    = local.landing_to_composer_eventarc_ack_deadline
+      minimum_backoff                         = local.landing_to_composer_eventarc_min_backoff
+      maximum_backoff                         = local.landing_to_composer_eventarc_max_backoff
+      dead_letter_enabled                     = local.landing_to_composer_eventarc_dead_letter_requested
+      dead_letter_topic_name                  = local.landing_to_composer_eventarc_dead_letter_topic_name
+      dead_letter_subscription_name           = local.landing_to_composer_eventarc_dead_letter_subscription_name
+      dead_letter_max_delivery_attempts       = local.landing_to_composer_eventarc_dead_letter_max_delivery_attempts
+      dead_letter_alert_enabled               = local.landing_to_composer_eventarc_dead_letter_alert_requested
+      dead_letter_alert_notification_channels = local.landing_to_composer_eventarc_dead_letter_alert_notification_channels
+      dead_letter_managed_by_terraform        = local.landing_to_composer_eventarc_dead_letter_enabled
+      managed_by_terraform                    = local.landing_to_composer_eventarc_sub_tuning_enabled
+      import_required                         = local.landing_to_composer_eventarc_sub_tuning_requested && !local.landing_to_composer_eventarc_sub_tuning_enabled
     }
   }
 }
@@ -159,6 +166,21 @@ output "landing_to_composer_pubsub_topic_id" {
 output "landing_to_composer_eventarc_subscription_tuning_resource_id" {
   description = "Imported Eventarc-managed Pub/Sub subscription resource id when subscription tuning is enabled and imported."
   value       = try(google_pubsub_subscription.landing_to_composer_eventarc_delivery[0].id, null)
+}
+
+output "landing_to_composer_eventarc_dead_letter_topic_id" {
+  description = "Pub/Sub topic id used as dead-letter topic for Eventarc delivery subscription."
+  value       = try(google_pubsub_topic.landing_to_composer_eventarc_dead_letter[0].id, null)
+}
+
+output "landing_to_composer_eventarc_dead_letter_subscription_id" {
+  description = "Pub/Sub subscription id attached to the dead-letter topic."
+  value       = try(google_pubsub_subscription.landing_to_composer_eventarc_dead_letter[0].id, null)
+}
+
+output "landing_to_composer_eventarc_dead_letter_alert_policy_id" {
+  description = "Monitoring alert policy id for dead-letter messages in Eventarc delivery subscription."
+  value       = try(google_monitoring_alert_policy.landing_to_composer_eventarc_dead_letter_detected[0].id, null)
 }
 
 output "landing_to_composer_runtime_service_account_email" {

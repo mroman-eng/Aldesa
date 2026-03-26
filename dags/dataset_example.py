@@ -15,12 +15,30 @@ BRONZE_PARQUET_BUCKET = os.environ.get(
 OBJECT_NAME_PREFIX = os.environ.get("OBJECT_NAME_PREFIX", "").strip("/")
 DATASET_EVENT_URI = os.environ.get("DATASET_EVENT_URI")
 
+
+def _normalize_dataset_uri(dataset_uri: str) -> str:
+    dataset_uri = dataset_uri.strip()
+    if not dataset_uri.startswith("gs://"):
+        return dataset_uri
+
+    bucket_and_path = dataset_uri.removeprefix("gs://").strip("/")
+    if not bucket_and_path:
+        return dataset_uri
+
+    if "/" not in bucket_and_path:
+        return f"gs://{bucket_and_path}/"
+
+    bucket, _, path = bucket_and_path.partition("/")
+    path = path.strip("/")
+    return f"gs://{bucket}/{path}/"
+
+
 if DATASET_EVENT_URI:
-    SAP_LANDING_DATASET = Dataset(DATASET_EVENT_URI)
+    SAP_LANDING_DATASET = Dataset(_normalize_dataset_uri(DATASET_EVENT_URI))
 elif OBJECT_NAME_PREFIX:
-    SAP_LANDING_DATASET = Dataset(f"gs://{LANDING_BUCKET}/{OBJECT_NAME_PREFIX}")
+    SAP_LANDING_DATASET = Dataset(f"gs://{LANDING_BUCKET}/{OBJECT_NAME_PREFIX}/")
 else:
-    SAP_LANDING_DATASET = Dataset(f"gs://{LANDING_BUCKET}")
+    SAP_LANDING_DATASET = Dataset(f"gs://{LANDING_BUCKET}/")
 
 
 def _extract_latest_trigger(triggering_dataset_events):
