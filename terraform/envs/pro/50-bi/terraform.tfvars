@@ -34,13 +34,10 @@ looker_studio = {
 # https://support.google.com/a/answer/16502999
 context_aware_access = {
   enabled                 = false
-  access_policy_id        = "accessPolicies/1234567890"
-  access_level_short_name = "ls_pro_corp_access"
+  access_policy_id        = "accessPolicies/1234567890" # placeholder, not real policy ID
+  access_level_short_name = "ls_pro_corp_access" # placeholder, not real access level name
   title                   = "Looker Studio PRO allowed networks"
-  scope                   = "group:REPLACE_ME_WORKSPACE_SCOPE_GROUP@aldesa.com"
+  scope                   = "group:REPLACE_ME_WORKSPACE_SCOPE_GROUP@aldesa.com" # placeholder, not real group email
   mode                    = "ACTIVE"
-  allowed_ip_cidrs = [
-    "203.0.113.0/24", # set here VPN or corporate network CIDRs that should have access.
-    "198.51.100.0/24",
-  ]
+  allowed_ip_cidrs = []
 }

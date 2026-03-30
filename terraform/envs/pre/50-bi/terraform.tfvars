@@ -39,7 +39,5 @@ context_aware_access = {
   title                   = "Looker Studio PRE allowed networks"
   scope                   = "group:REPLACE_ME_WORKSPACE_SCOPE_GROUP@aldesa.com"
   mode                    = "WARN" # change to ACTIVE to enable enforcement
-  allowed_ip_cidrs = [
-    "87.223.245.15/32" # example - set here VPN or corporate network CIDRs that should have access.
-  ]
+  allowed_ip_cidrs = []
 }
