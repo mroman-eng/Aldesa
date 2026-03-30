@@ -66,7 +66,7 @@ Main files:
 
 - `cloudbuild/pr-validate-dags.yaml`
 - `cloudbuild/scripts/pr_validate_dags.sh`
-- `tests/dags/test_dag_integrity.py`
+- `tests/dags/`
 
 ### Dataform validation
 

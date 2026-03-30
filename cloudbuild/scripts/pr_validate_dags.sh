@@ -117,7 +117,7 @@ PY
       AIRFLOW_HOME=\"${AIRFLOW_TEST_HOME}\" \
       AIRFLOW__CORE__LOAD_EXAMPLES=False \
       AIRFLOW__CORE__UNIT_TEST_MODE=True \
-      pytest tests/dags/test_dag_integrity.py -q"
+      pytest tests/dags -q"
 }
 
 if [ "${RELEVANT_CHANGES}" = "true" ]; then
@@ -138,7 +138,7 @@ fi
   fi
   printf -- '- Updated: `%s`\n' "${TIMESTAMP_UTC}"
   printf -- '- Relevant changes detected: `%s`\n' "${RELEVANT_CHANGES}"
-  printf -- '- `pytest tests/dags/test_dag_integrity.py`: `%s`\n\n' "${DAG_TEST_STATUS}"
+  printf -- '- `pytest tests/dags -q`: `%s`\n\n' "${DAG_TEST_STATUS}"
 } >"${COMMENT_BODY_FILE}"
 
 if [ "${RELEVANT_CHANGES}" = "true" ]; then
