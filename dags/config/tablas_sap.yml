@@ -1,0 +1,716 @@
+
+# CONFIGURACIÓN MAESTRA DE PIPELINES SAP
+# ---------------------------------------
+
+# Parámetros compartidos para no repetir en cada tabla
+globals:
+  project_id: "tu-proyecto-gcp"
+  alert_email: "equipo_datos@empresa.com"
+  bq_dataset_raw: "raw"
+  bq_dataset_bronze: "bronze"
+  bq_dataset_silver: "silver"
+  
+
+# Configuración global de tablas SAP
+# ----------------------------------
+
+tablas:
+
+  proj:
+    folder_path_source: "raw/sap/proj/to_be_processed/"
+    folder_path_processed: "raw/sap/proj/processed/"
+    folder_path_unprocessed: "raw/sap/proj/unprocessed/"
+    
+    # Outlets para Datasets de Airflow
+    dataset_raw_outlet: "bigquery://mi-proyecto.raw.proj"
+    dataset_bronze_outlet: "bigquery://mi-proyecto.bronze.proj"
+    dataset_silver_outlet: "bigquery://mi-proyecto.silver.proj"
+    
+    # Nombres de tablas físicas
+    table_raw: "proj"
+    table_bronze: "proj"
+    table_silver: "proj"
+    
+    # Tags para la interfaz de Airflow
+    tags_dag_raw: ['raw', 'proj']
+    tags_dag_bronze: ['bronze', 'proj']
+    tags_dag_silver: ['silver', 'proj']
+    
+    # Selectores para Dataform
+    dataform_bronze: "proj_bronze"
+    dataform_silver: "proj_silver"
+    
+    is_gold_dependency: true #si es true el DAG de Gold añade un sensor de BigQuery para esta tabla
+    is_critical: true
+
+  prps:
+    folder_path_source: "raw/sap/prps/to_be_processed/"
+    folder_path_processed: "raw/sap/prps/processed/"
+    folder_path_unprocessed: "raw/sap/prps/unprocessed/"
+    
+    dataset_raw_outlet: "bigquery://mi-proyecto.raw.prps"
+    dataset_bronze_outlet: "bigquery://mi-proyecto.bronze.prps"
+    dataset_silver_outlet: "bigquery://mi-proyecto.silver.prps"
+    
+    table_raw: "prps"
+    table_bronze: "prps"
+    table_silver: "prps"
+    
+    tags_dag_raw: ['raw', 'prps']
+    tags_dag_bronze: ['bronze', 'prps']
+    tags_dag_silver: ['silver', 'prps']
+    
+    dataform_bronze: "prps_bronze"
+    dataform_silver: "prps_silver"
+    
+    is_gold_dependency: true
+    is_critical: true
+
+  vsproj_cn:
+    folder_path_source: "raw/sap/vsproj_cn/to_be_processed/"
+    folder_path_processed: "raw/sap/vsproj_cn/processed/"
+    folder_path_unprocessed: "raw/sap/vsproj_cn/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.vsproj_cn"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.vsproj_cn"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.vsproj_cn"
+    table_raw: "vsproj_cn"
+    table_bronze: "vsproj_cn"
+    table_silver: "vsproj_cn"
+    tags_dag_raw: ['raw', 'vsproj_cn']
+    tags_dag_bronze: ['bronze', 'vsproj_cn']
+    tags_dag_silver: ['silver', 'vsproj_cn']
+    dataform_bronze: "vsproj_cn_bronze"
+    dataform_silver: "vsproj_cn_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  vsprps_cn:
+    folder_path_source: "raw/sap/vsprps_cn/to_be_processed/"
+    folder_path_processed: "raw/sap/vsprps_cn/processed/"
+    folder_path_unprocessed: "raw/sap/vsprps_cn/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.vsprps_cn"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.vsprps_cn"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.vsprps_cn"
+    table_raw: "vsprps_cn"
+    table_bronze: "vsprps_cn"
+    table_silver: "vsprps_cn"
+    tags_dag_raw: ['raw', 'vsprps_cn']
+    tags_dag_bronze: ['bronze', 'vsprps_cn']
+    tags_dag_silver: ['silver', 'vsprps_cn']
+    dataform_bronze: "vsprps_cn_bronze"
+    dataform_silver: "vsprps_cn_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  sothis_crt_t100:
+    folder_path_source: "raw/sap/sothis_crt_t100/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t100/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t100/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t100"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t100"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t100"
+    table_raw: "sothis_crt_t100"
+    table_bronze: "sothis_crt_t100"
+    table_silver: "sothis_crt_t100"
+    tags_dag_raw: ['raw', 'sothis_crt_t100']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t100']
+    tags_dag_silver: ['silver', 'sothis_crt_t100']
+    dataform_bronze: "sothis_crt_t100_bronze"
+    dataform_silver: "sothis_crt_t100_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t103:
+    folder_path_source: "raw/sap/sothis_crt_t103/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t103/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t103/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t103"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t103"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t103"
+    table_raw: "sothis_crt_t103"
+    table_bronze: "sothis_crt_t103"
+    table_silver: "sothis_crt_t103"
+    tags_dag_raw: ['raw', 'sothis_crt_t103']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t103']
+    tags_dag_silver: ['silver', 'sothis_crt_t103']
+    dataform_bronze: "sothis_crt_t103_bronze"
+    dataform_silver: "sothis_crt_t103_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t101:
+    folder_path_source: "raw/sap/sothis_crt_t101/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t101/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t101/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t101"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t101"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t101"
+    table_raw: "sothis_crt_t101"
+    table_bronze: "sothis_crt_t101"
+    table_silver: "sothis_crt_t101"
+    tags_dag_raw: ['raw', 'sothis_crt_t101']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t101']
+    tags_dag_silver: ['silver', 'sothis_crt_t101']
+    dataform_bronze: "sothis_crt_t101_bronze"
+    dataform_silver: "sothis_crt_t101_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t021:
+    folder_path_source: "raw/sap/sothis_crt_t021/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t021/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t021/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t021"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t021"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t021"
+    table_raw: "sothis_crt_t021"
+    table_bronze: "sothis_crt_t021"
+    table_silver: "sothis_crt_t021"
+    tags_dag_raw: ['raw', 'sothis_crt_t021']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t021']
+    tags_dag_silver: ['silver', 'sothis_crt_t021']
+    dataform_bronze: "sothis_crt_t021_bronze"
+    dataform_silver: "sothis_crt_t021_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t098:
+    folder_path_source: "raw/sap/sothis_crt_t098/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t098/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t098/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t098"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t098"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t098"
+    table_raw: "sothis_crt_t098"
+    table_bronze: "sothis_crt_t098"
+    table_silver: "sothis_crt_t098"
+    tags_dag_raw: ['raw', 'sothis_crt_t098']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t098']
+    tags_dag_silver: ['silver', 'sothis_crt_t098']
+    dataform_bronze: "sothis_crt_t098_bronze"
+    dataform_silver: "sothis_crt_t098_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t097:
+    folder_path_source: "raw/sap/sothis_crt_t097/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t097/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t097/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t097"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t097"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t097"
+    table_raw: "sothis_crt_t097"
+    table_bronze: "sothis_crt_t097"
+    table_silver: "sothis_crt_t097"
+    tags_dag_raw: ['raw', 'sothis_crt_t097']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t097']
+    tags_dag_silver: ['silver', 'sothis_crt_t097']
+    dataform_bronze: "sothis_crt_t097_bronze"
+    dataform_silver: "sothis_crt_t097_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t096:
+    folder_path_source: "raw/sap/sothis_crt_t096/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t096/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t096/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t096"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t096"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t096"
+    table_raw: "sothis_crt_t096"
+    table_bronze: "sothis_crt_t096"
+    table_silver: "sothis_crt_t096"
+    tags_dag_raw: ['raw', 'sothis_crt_t096']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t096']
+    tags_dag_silver: ['silver', 'sothis_crt_t096']
+    dataform_bronze: "sothis_crt_t096_bronze"
+    dataform_silver: "sothis_crt_t096_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t044:
+    folder_path_source: "raw/sap/sothis_crt_t044/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t044/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t044/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t044"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t044"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t044"
+    table_raw: "sothis_crt_t044"
+    table_bronze: "sothis_crt_t044"
+    table_silver: "sothis_crt_t044"
+    tags_dag_raw: ['raw', 'sothis_crt_t044']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t044']
+    tags_dag_silver: ['silver', 'sothis_crt_t044']
+    dataform_bronze: "sothis_crt_t044_bronze"
+    dataform_silver: "sothis_crt_t044_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t046:
+    folder_path_source: "raw/sap/sothis_crt_t046/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t046/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t046/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t046"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t046"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t046"
+    table_raw: "sothis_crt_t046"
+    table_bronze: "sothis_crt_t046"
+    table_silver: "sothis_crt_t046"
+    tags_dag_raw: ['raw', 'sothis_crt_t046']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t046']
+    tags_dag_silver: ['silver', 'sothis_crt_t046']
+    dataform_bronze: "sothis_crt_t046_bronze"
+    dataform_silver: "sothis_crt_t046_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t045:
+    folder_path_source: "raw/sap/sothis_crt_t045/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t045/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t045/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t045"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t045"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t045"
+    table_raw: "sothis_crt_t045"
+    table_bronze: "sothis_crt_t045"
+    table_silver: "sothis_crt_t045"
+    tags_dag_raw: ['raw', 'sothis_crt_t045']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t045']
+    tags_dag_silver: ['silver', 'sothis_crt_t045']
+    dataform_bronze: "sothis_crt_t045_bronze"
+    dataform_silver: "sothis_crt_t045_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t047:
+    folder_path_source: "raw/sap/sothis_crt_t047/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t047/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t047/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t047"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t047"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t047"
+    table_raw: "sothis_crt_t047"
+    table_bronze: "sothis_crt_t047"
+    table_silver: "sothis_crt_t047"
+    tags_dag_raw: ['raw', 'sothis_crt_t047']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t047']
+    tags_dag_silver: ['silver', 'sothis_crt_t047']
+    dataform_bronze: "sothis_crt_t047_bronze"
+    dataform_silver: "sothis_crt_t047_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t060:
+    folder_path_source: "raw/sap/sothis_crt_t060/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t060/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t060/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t060"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t060"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t060"
+    table_raw: "sothis_crt_t060"
+    table_bronze: "sothis_crt_t060"
+    table_silver: "sothis_crt_t060"
+    tags_dag_raw: ['raw', 'sothis_crt_t060']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t060']
+    tags_dag_silver: ['silver', 'sothis_crt_t060']
+    dataform_bronze: "sothis_crt_t060_bronze"
+    dataform_silver: "sothis_crt_t060_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t062:
+    folder_path_source: "raw/sap/sothis_crt_t062/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t062/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t062/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t062"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t062"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t062"
+    table_raw: "sothis_crt_t062"
+    table_bronze: "sothis_crt_t062"
+    table_silver: "sothis_crt_t062"
+    tags_dag_raw: ['raw', 'sothis_crt_t062']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t062']
+    tags_dag_silver: ['silver', 'sothis_crt_t062']
+    dataform_bronze: "sothis_crt_t062_bronze"
+    dataform_silver: "sothis_crt_t062_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t019:
+    folder_path_source: "raw/sap/sothis_crt_t019/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t019/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t019/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t019"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t019"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t019"
+    table_raw: "sothis_crt_t019"
+    table_bronze: "sothis_crt_t019"
+    table_silver: "sothis_crt_t019"
+    tags_dag_raw: ['raw', 'sothis_crt_t019']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t019']
+    tags_dag_silver: ['silver', 'sothis_crt_t019']
+    dataform_bronze: "sothis_crt_t019_bronze"
+    dataform_silver: "sothis_crt_t019_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  sothis_crt_t058:
+    folder_path_source: "raw/sap/sothis_crt_t058/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t058/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t058/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t058"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t058"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t058"
+    table_raw: "sothis_crt_t058"
+    table_bronze: "sothis_crt_t058"
+    table_silver: "sothis_crt_t058"
+    tags_dag_raw: ['raw', 'sothis_crt_t058']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t058']
+    tags_dag_silver: ['silver', 'sothis_crt_t058']
+    dataform_bronze: "sothis_crt_t058_bronze"
+    dataform_silver: "sothis_crt_t058_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  coep:
+    folder_path_source: "raw/sap/coep/to_be_processed/"
+    folder_path_processed: "raw/sap/coep/processed/"
+    folder_path_unprocessed: "raw/sap/coep/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.coep"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.coep"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.coep"
+    table_raw: "coep"
+    table_bronze: "coep"
+    table_silver: "coep"
+    tags_dag_raw: ['raw', 'coep']
+    tags_dag_bronze: ['bronze', 'coep']
+    tags_dag_silver: ['silver', 'coep']
+    dataform_bronze: "coep_bronze"
+    dataform_silver: "coep_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  cobk:
+    folder_path_source: "raw/sap/cobk/to_be_processed/"
+    folder_path_processed: "raw/sap/cobk/processed/"
+    folder_path_unprocessed: "raw/sap/cobk/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.cobk"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.cobk"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.cobk"
+    table_raw: "cobk"
+    table_bronze: "cobk"
+    table_silver: "cobk"
+    tags_dag_raw: ['raw', 'cobk']
+    tags_dag_bronze: ['bronze', 'cobk']
+    tags_dag_silver: ['silver', 'cobk']
+    dataform_bronze: "cobk_bronze"
+    dataform_silver: "cobk_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  zconstprog:
+    folder_path_source: "raw/sap/zconstprog/to_be_processed/"
+    folder_path_processed: "raw/sap/zconstprog/processed/"
+    folder_path_unprocessed: "raw/sap/zconstprog/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.zconstprog"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.zconstprog"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.zconstprog"
+    table_raw: "zconstprog"
+    table_bronze: "zconstprog"
+    table_silver: "zconstprog"
+    tags_dag_raw: ['raw', 'zconstprog']
+    tags_dag_bronze: ['bronze', 'zconstprog']
+    tags_dag_silver: ['silver', 'zconstprog']
+    dataform_bronze: "zconstprog_bronze"
+    dataform_silver: "zconstprog_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  sothis_crt_t067:
+    folder_path_source: "raw/sap/sothis_crt_t067/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t067/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t067/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t067"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t067"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t067"
+    table_raw: "sothis_crt_t067"
+    table_bronze: "sothis_crt_t067"
+    table_silver: "sothis_crt_t067"
+    tags_dag_raw: ['raw', 'sothis_crt_t067']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t067']
+    tags_dag_silver: ['silver', 'sothis_crt_t067']
+    dataform_bronze: "sothis_crt_t067_bronze"
+    dataform_silver: "sothis_crt_t067_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  ztc_grupo:
+    folder_path_source: "raw/sap/ztc_grupo/to_be_processed/"
+    folder_path_processed: "raw/sap/ztc_grupo/processed/"
+    folder_path_unprocessed: "raw/sap/ztc_grupo/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.ztc_grupo"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.ztc_grupo"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.ztc_grupo"
+    table_raw: "ztc_grupo"
+    table_bronze: "ztc_grupo"
+    table_silver: "ztc_grupo"
+    tags_dag_raw: ['raw', 'ztc_grupo']
+    tags_dag_bronze: ['bronze', 'ztc_grupo']
+    tags_dag_silver: ['silver', 'ztc_grupo']
+    dataform_bronze: "ztc_grupo_bronze"
+    dataform_silver: "ztc_grupo_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  sothis_crt_t009:
+    folder_path_source: "raw/sap/sothis_crt_t009/to_be_processed/"
+    folder_path_processed: "raw/sap/sothis_crt_t009/processed/"
+    folder_path_unprocessed: "raw/sap/sothis_crt_t009/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.sothis_crt_t009"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.sothis_crt_t009"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.sothis_crt_t009"
+    table_raw: "sothis_crt_t009"
+    table_bronze: "sothis_crt_t009"
+    table_silver: "sothis_crt_t009"
+    tags_dag_raw: ['raw', 'sothis_crt_t009']
+    tags_dag_bronze: ['bronze', 'sothis_crt_t009']
+    tags_dag_silver: ['silver', 'sothis_crt_t009']
+    dataform_bronze: "sothis_crt_t009_bronze"
+    dataform_silver: "sothis_crt_t009_silver"
+    is_gold_dependency: false
+    is_critical: false
+
+  setheader:
+    folder_path_source: "raw/sap/setheader/to_be_processed/"
+    folder_path_processed: "raw/sap/setheader/processed/"
+    folder_path_unprocessed: "raw/sap/setheader/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.setheader"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.setheader"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.setheader"
+    table_raw: "setheader"
+    table_bronze: "setheader"
+    table_silver: "setheader"
+    tags_dag_raw: ['raw', 'setheader']
+    tags_dag_bronze: ['bronze', 'setheader']
+    tags_dag_silver: ['silver', 'setheader']
+    dataform_bronze: "setheader_bronze"
+    dataform_silver: "setheader_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  setnode:
+    folder_path_source: "raw/sap/setnode/to_be_processed/"
+    folder_path_processed: "raw/sap/setnode/processed/"
+    folder_path_unprocessed: "raw/sap/setnode/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.setnode"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.setnode"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.setnode"
+    table_raw: "setnode"
+    table_bronze: "setnode"
+    table_silver: "setnode"
+    tags_dag_raw: ['raw', 'setnode']
+    tags_dag_bronze: ['bronze', 'setnode']
+    tags_dag_silver: ['silver', 'setnode']
+    dataform_bronze: "setnode_bronze"
+    dataform_silver: "setnode_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  setleaf:
+    folder_path_source: "raw/sap/setleaf/to_be_processed/"
+    folder_path_processed: "raw/sap/setleaf/processed/"
+    folder_path_unprocessed: "raw/sap/setleaf/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.setleaf"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.setleaf"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.setleaf"
+    table_raw: "setleaf"
+    table_bronze: "setleaf"
+    table_silver: "setleaf"
+    tags_dag_raw: ['raw', 'setleaf']
+    tags_dag_bronze: ['bronze', 'setleaf']
+    tags_dag_silver: ['silver', 'setleaf']
+    dataform_bronze: "setleaf_bronze"
+    dataform_silver: "setleaf_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  t001:
+    folder_path_source: "raw/sap/t001/to_be_processed/"
+    folder_path_processed: "raw/sap/t001/processed/"
+    folder_path_unprocessed: "raw/sap/t001/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.t001"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.t001"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.t001"
+    table_raw: "t001"
+    table_bronze: "t001"
+    table_silver: "t001"
+    tags_dag_raw: ['raw', 't001']
+    tags_dag_bronze: ['bronze', 't001']
+    tags_dag_silver: ['silver', 't001']
+    dataform_bronze: "t001_bronze"
+    dataform_silver: "t001_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  usr21:
+    folder_path_source: "raw/sap/usr21/to_be_processed/"
+    folder_path_processed: "raw/sap/usr21/processed/"
+    folder_path_unprocessed: "raw/sap/usr21/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.usr21"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.usr21"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.usr21"
+    table_raw: "usr21"
+    table_bronze: "usr21"
+    table_silver: "usr21"
+    tags_dag_raw: ['raw', 'usr21']
+    tags_dag_bronze: ['bronze', 'usr21']
+    tags_dag_silver: ['silver', 'usr21']
+    dataform_bronze: "usr21_bronze"
+    dataform_silver: "usr21_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  adr6:
+    folder_path_source: "raw/sap/adr6/to_be_processed/"
+    folder_path_processed: "raw/sap/adr6/processed/"
+    folder_path_unprocessed: "raw/sap/adr6/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.adr6"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.adr6"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.adr6"
+    table_raw: "adr6"
+    table_bronze: "adr6"
+    table_silver: "adr6"
+    tags_dag_raw: ['raw', 'adr6']
+    tags_dag_bronze: ['bronze', 'adr6']
+    tags_dag_silver: ['silver', 'adr6']
+    dataform_bronze: "adr6_bronze"
+    dataform_silver: "adr6_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  agr_users:
+    folder_path_source: "raw/sap/agr_users/to_be_processed/"
+    folder_path_processed: "raw/sap/agr_users/processed/"
+    folder_path_unprocessed: "raw/sap/agr_users/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.agr_users"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.agr_users"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.agr_users"
+    table_raw: "agr_users"
+    table_bronze: "agr_users"
+    table_silver: "agr_users"
+    tags_dag_raw: ['raw', 'agr_users']
+    tags_dag_bronze: ['bronze', 'agr_users']
+    tags_dag_silver: ['silver', 'agr_users']
+    dataform_bronze: "agr_users_bronze"
+    dataform_silver: "agr_users_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  agr_define:
+    folder_path_source: "raw/sap/agr_define/to_be_processed/"
+    folder_path_processed: "raw/sap/agr_define/processed/"
+    folder_path_unprocessed: "raw/sap/agr_define/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.agr_define"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.agr_define"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.agr_define"
+    table_raw: "agr_define"
+    table_bronze: "agr_define"
+    table_silver: "agr_define"
+    tags_dag_raw: ['raw', 'agr_define']
+    tags_dag_bronze: ['bronze', 'agr_define']
+    tags_dag_silver: ['silver', 'agr_define']
+    dataform_bronze: "agr_define_bronze"
+    dataform_silver: "agr_define_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  agr_1252:
+    folder_path_source: "raw/sap/agr_1252/to_be_processed/"
+    folder_path_processed: "raw/sap/agr_1252/processed/"
+    folder_path_unprocessed: "raw/sap/agr_1252/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.agr_1252"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.agr_1252"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.agr_1252"
+    table_raw: "agr_1252"
+    table_bronze: "agr_1252"
+    table_silver: "agr_1252"
+    tags_dag_raw: ['raw', 'agr_1252']
+    tags_dag_bronze: ['bronze', 'agr_1252']
+    tags_dag_silver: ['silver', 'agr_1252']
+    dataform_bronze: "agr_1252_bronze"
+    dataform_silver: "agr_1252_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  vtbfha:
+    folder_path_source: "raw/sap/vtbfha/to_be_processed/"
+    folder_path_processed: "raw/sap/vtbfha/processed/"
+    folder_path_unprocessed: "raw/sap/vtbfha/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.vtbfha"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.vtbfha"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.vtbfha"
+    table_raw: "vtbfha"
+    table_bronze: "vtbfha"
+    table_silver: "vtbfha"
+    tags_dag_raw: ['raw', 'vtbfha']
+    tags_dag_bronze: ['bronze', 'vtbfha']
+    tags_dag_silver: ['silver', 'vtbfha']
+    dataform_bronze: "vtbfha_bronze"
+    dataform_silver: "vtbfha_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  vtbfhapo:
+    folder_path_source: "raw/sap/vtbfhapo/to_be_processed/"
+    folder_path_processed: "raw/sap/vtbfhapo/processed/"
+    folder_path_unprocessed: "raw/sap/vtbfhapo/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.vtbfhapo"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.vtbfhapo"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.vtbfhapo"
+    table_raw: "vtbfhapo"
+    table_bronze: "vtbfhapo"
+    table_silver: "vtbfhapo"
+    tags_dag_raw: ['raw', 'vtbfhapo']
+    tags_dag_bronze: ['bronze', 'vtbfhapo']
+    tags_dag_silver: ['silver', 'vtbfhapo']
+    dataform_bronze: "vtbfhapo_bronze"
+    dataform_silver: "vtbfhapo_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  but000:
+    folder_path_source: "raw/sap/but000/to_be_processed/"
+    folder_path_processed: "raw/sap/but000/processed/"
+    folder_path_unprocessed: "raw/sap/but000/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.but000"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.but000"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.but000"
+    table_raw: "but000"
+    table_bronze: "but000"
+    table_silver: "but000"
+    tags_dag_raw: ['raw', 'but000']
+    tags_dag_bronze: ['bronze', 'but000']
+    tags_dag_silver: ['silver', 'but000']
+    dataform_bronze: "but000_bronze"
+    dataform_silver: "but000_silver"
+    is_gold_dependency: true
+    is_critical: true
+
+  zps_plan_vigente:
+    folder_path_source: "raw/sap/zps_plan_vigente/to_be_processed/"
+    folder_path_processed: "raw/sap/zps_plan_vigente/processed/"
+    folder_path_unprocessed: "raw/sap/zps_plan_vigente/unprocessed/"
+    dataset_raw_outlet: "bq://tu-proyecto-gcp.raw.zps_plan_vigente"
+    dataset_bronze_outlet: "bq://tu-proyecto-gcp.bronze.zps_plan_vigente"
+    dataset_silver_outlet: "bq://tu-proyecto-gcp.silver.zps_plan_vigente"
+    table_raw: "zps_plan_vigente"
+    table_bronze: "zps_plan_vigente"
+    table_silver: "zps_plan_vigente"
+    tags_dag_raw: ['raw', 'zps_plan_vigente']
+    tags_dag_bronze: ['bronze', 'zps_plan_vigente']
+    tags_dag_silver: ['silver', 'zps_plan_vigente']
+    dataform_bronze: "zps_plan_vigente_bronze"
+    dataform_silver: "zps_plan_vigente_silver"
+    is_gold_dependency: true
+    is_critical: true
+
