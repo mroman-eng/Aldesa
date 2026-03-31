@@ -116,7 +116,9 @@ def create_bronze_dag(tabla_id, config, globals_conf, ds_entrada, ds_salida):
             project_id=globals_conf['project_id'],
             region=globals_conf.get('region', 'europe-west1'),
             repository_id=globals_conf.get('dataform_repo', 'repo-sap'),
-            invocation_config={"included_tags": [config['dataform_bronze']]},
+            workflow_invocation={
+                "invocation_config": {"included_tags": [config['dataform_bronze']]}
+            },
             outlets=[ds_salida]
         )
         log_invoc_end = PythonOperator(task_id='log_invocation_end', python_callable=_log_step,
@@ -155,7 +157,9 @@ def create_silver_dag(tabla_id, config, globals_conf, ds_entrada, ds_salida):
             project_id=globals_conf['project_id'],
             region=globals_conf.get('region', 'europe-west1'),
             repository_id=globals_conf.get('dataform_repo', 'repo-sap'),
-            invocation_config={"included_tags": [config['dataform_silver']]},
+            workflow_invocation={
+                "invocation_config": {"included_tags": [config['dataform_silver']]}
+            },
             outlets=[ds_salida]
         )
         log_invoc_end = PythonOperator(task_id='log_invocation_end', python_callable=_log_step,
