@@ -23,3 +23,13 @@ Dockerfile
 packages.txt
 airflow_settings.yaml
 .astro/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# OS Metadata
+.DS_Store
+Thumbs.db
