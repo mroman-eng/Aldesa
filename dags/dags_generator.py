@@ -57,7 +57,7 @@ if config:
             tabla_id=tabla_id,
             config=info,
             globals_conf=globals_conf,
-            dataset_salida=ds_raw
+            ds_salida=ds_raw
         )
 
         # --- CAPA 2: GENERACIÓN DE DAG BRONZE ---
@@ -67,8 +67,8 @@ if config:
             tabla_id=tabla_id,
             config=info,
             globals_conf=globals_conf,
-            dataset_entrada=ds_raw,
-            dataset_salida=ds_bronze
+            ds_entrada=ds_raw,
+            ds_salida=ds_bronze
         )
 
         # --- CAPA 3: GENERACIÓN DE DAG SILVER ---
@@ -78,8 +78,8 @@ if config:
             tabla_id=tabla_id,
             config=info,
             globals_conf=globals_conf,
-            dataset_entrada=ds_bronze,
-            dataset_salida=ds_silver
+            ds_entrada=ds_bronze,
+            ds_salida=ds_silver
         )
 
     logger.info(f"✅ Se han generado dinámicamente los DAGs para {len(tablas)} tablas SAP.")
