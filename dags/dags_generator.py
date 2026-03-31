@@ -15,9 +15,14 @@ from utils.functions_create_dags import create_raw_dag, create_bronze_dag, creat
 logger = logging.getLogger(__name__)
 
 # 1. RUTA DEL FICHERO DE CONFIGURACIÓN
-# Usamos la variable de entorno de Airflow para localizar el YAML de forma segura
-DAGS_FOLDER = os.environ.get('DAGS_FOLDER', '/home/airflow/gcs/dags')
-CONFIG_PATH = os.path.join(DAGS_FOLDER, 'config/tablas_sap.yml')
+# Obtenemos la ruta del directorio donde está ESTE archivo (dags/)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construimos la ruta hacia la carpeta config
+CONFIG_PATH = os.path.join(CURRENT_DIR, 'config', 'tablas_sap.yml')
+
+# Opcional: Imprimir para debug en los logs de Astro
+print(f"--- Intentando cargar YAML desde: {CONFIG_PATH} ---")
 
 def load_config(path):
     """Carga el fichero YAML de configuración."""
