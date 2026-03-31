@@ -17,3 +17,9 @@ node_modules/
 
 # Ruffle local artifacts
 **/.ruff_cache/
+
+# Astro / Airflow local development
+Dockerfile
+packages.txt
+airflow_settings.yaml
+.astro/
