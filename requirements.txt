@@ -1,1 +1,9 @@
 # Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+# Astro Runtime pre-installed providers are managed by the runtime image.
+# Add your extra specific dependencies below:
+
+apache-airflow-providers-google>=10.0.0
+pandas
+pandas-gbq
+pyarrow
+pyyaml
