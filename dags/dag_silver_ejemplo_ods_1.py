@@ -3,7 +3,8 @@ from google.cloud import dataform_v1beta1
 from airflow.providers.google.cloud.operators.dataform import DataformCreateWorkflowInvocationOperator
 #from airflow.providers.google.cloud.operators.dataplex import DataplexVerifyDataQualityOperator
 #from airflow.providers.google.cloud.operators.dataplex import DataplexDataQualityOperator
-from airflow.providers.google.cloud.operators.dataplex import DataplexCreateDataQualityJobOperator
+#from airflow.providers.google.cloud.operators.dataplex import DataplexCreateDataQualityJobOperator
+from airflow.providers.google.cloud.operators.dataplex import DataplexCreateTaskOperator
 from datetime import datetime
 
 with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, tags=['silver', 'proj', 'ods']) as dag:
@@ -23,12 +24,25 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
     )
 
     # 2. CONTROL DE CALIDAD: Dataplex revisa el ODS antes de pasar a Gold
-    dq_check = DataplexCreateDataQualityJobOperator(
-        task_id="dataplex_quality_check",
-        project_id="tu-nuevo-proyecto-gcp",
+    dq_check = DataplexCreateTaskOperator(
+        task_id="ejecutar_calidad_ods",         # ID para el grafo de Airflow
+        dataplex_task_id="task-ods-calidad-01", # ID que tendrá la tarea dentro de Google Cloud
+        project_id="tu-proyecto-gcp",
         region="europe-west1",
-        data_scan_id="scan-ods-proyecto-1", # Debes crearlo en Dataplex
+        lake_id="tu-lake-id",                   # ID del Lake en Dataplex
+        body={
+            "description": "Tarea de Data Quality para ODS",
+            "execution_spec": {
+                "service_account": "tu-sa@proyecto.iam.gserviceaccount.com",
+                "args": {
+                    "data_scan_id": "scan-ods-proyecto-1"
+                }
+            },
+            "trigger_spec": {"type": "ON_DEMAND"}
+        },
+        gcp_conn_id="google_cloud_default"
     )
+
 
     # 3. EJECUCIÓN HACIA ADELANTE: Si el ODS es bueno, actualiza Gold
     run_gold = DataformCreateWorkflowInvocationOperator(
