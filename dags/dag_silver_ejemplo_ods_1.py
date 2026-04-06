@@ -4,7 +4,7 @@ from airflow.providers.google.cloud.operators.dataform import DataformCreateWork
 from airflow.providers.google.cloud.operators.dataplex import DataplexVerifyDataQualityOperator
 from datetime import datetime
 
-with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule_interval=None) as dag:
+with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, tags=['silver', 'proj', 'ods']) as dag:
 
     # 1. EJECUCIÓN HACIA ATRÁS: Ejecuta ODS y todo lo que necesite (Bronze y Clean)
     run_silver = DataformCreateWorkflowInvocationOperator(
