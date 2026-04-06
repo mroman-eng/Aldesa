@@ -5,6 +5,7 @@ from airflow.providers.google.cloud.operators.dataform import DataformCreateWork
 #from airflow.providers.google.cloud.operators.dataplex import DataplexDataQualityOperator
 #from airflow.providers.google.cloud.operators.dataplex import DataplexCreateDataQualityJobOperator
 from airflow.providers.google.cloud.operators.dataplex import DataplexCreateTaskOperator
+
 from datetime import datetime
 
 with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, tags=['silver', 'proj', 'ods']) as dag:
@@ -25,20 +26,25 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
 
     # 2. CONTROL DE CALIDAD: Dataplex revisa el ODS antes de pasar a Gold
     dq_check = DataplexCreateTaskOperator(
-        task_id="ejecutar_calidad_ods",         # ID para el grafo de Airflow
-        dataplex_task_id="task-ods-calidad-01", # ID que tendrá la tarea dentro de Google Cloud
+        task_id="ejecutar_calidad_ods",
+        dataplex_task_id="ejecucion-manual-ods-{{ ds_nodash }}", # ID único para GCP
         project_id="tu-proyecto-gcp",
         region="europe-west1",
-        lake_id="tu-lake-id",                   # ID del Lake en Dataplex
+        lake_id="tu-lake-id", 
         body={
-            "description": "Tarea de Data Quality para ODS",
+            "description": "Lanzando el scan manual desde Airflow",
+            "trigger_spec": {"type": "ON_DEMAND"},
             "execution_spec": {
                 "service_account": "tu-sa@proyecto.iam.gserviceaccount.com",
-                "args": {
-                    "data_scan_id": "scan-ods-proyecto-1"
-                }
             },
-            "trigger_spec": {"type": "ON_DEMAND"}
+            # Aquí es donde "enganchas" tu scan manual de la consola
+            "spark": {
+                "sql_scripts": [], # Se deja vacío
+                "main_class": "com.google.cloud.dataplex.templates.dataquality.DataQualityScan",
+                "args": {
+                    "data_scan_id": "nombre-de-tu-scan-en-gcp" # El ID del scan manual
+                }
+            }
         },
         gcp_conn_id="google_cloud_default"
     )
