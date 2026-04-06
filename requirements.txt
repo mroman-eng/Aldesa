@@ -2,7 +2,7 @@
 # Astro Runtime pre-installed providers are managed by the runtime image.
 # Add your extra specific dependencies below:
 
-apache-airflow-providers-google==21.0.0
+apache-airflow-providers-google==10.13.0
 pandas
 pandas-gbq
 pyarrow
