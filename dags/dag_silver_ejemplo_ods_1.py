@@ -2,7 +2,8 @@ from airflow import DAG
 from google.cloud import dataform_v1beta1
 from airflow.providers.google.cloud.operators.dataform import DataformCreateWorkflowInvocationOperator
 #from airflow.providers.google.cloud.operators.dataplex import DataplexVerifyDataQualityOperator
-from airflow.providers.google.cloud.operators.dataplex import DataplexDataQualityOperator
+#from airflow.providers.google.cloud.operators.dataplex import DataplexDataQualityOperator
+from airflow.providers.google.cloud.operators.dataplex import DataplexCreateDataQualityJobOperator
 from datetime import datetime
 
 with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, tags=['silver', 'proj', 'ods']) as dag:
@@ -22,7 +23,7 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
     )
 
     # 2. CONTROL DE CALIDAD: Dataplex revisa el ODS antes de pasar a Gold
-    dq_check = DataplexVerifyDataQualityOperator(
+    dq_check = DataplexCreateDataQualityJobOperator(
         task_id="dataplex_quality_check",
         project_id="tu-nuevo-proyecto-gcp",
         region="europe-west1",
