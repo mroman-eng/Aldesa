@@ -12,13 +12,13 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
 
     # 1. EJECUCIÓN HACIA ATRÁS: Ejecuta ODS y todo lo que necesite (Bronze y Clean)
     run_silver = DataformCreateWorkflowInvocationOperator(
-        task_id="run_silver_ods_full",
-        project_id="tu-nuevo-proyecto-gcp",
+        task_id="run_silver_ods_1",
+        project_id="data-ai-lab-485911",
         region="europe-west1",
         repository_id="tu-repo-dataform",
         workflow_invocation={
             "invocation_config": {
-                "included_tags": ["silver_ods"],
+                "included_tags": ["silver_ejemplo_ods_1"],
                 "include_dependencies": True # <--- ESTO ACTIVA EL "HACIA ATRÁS"
             }
         }
@@ -28,7 +28,7 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
     dq_check = DataplexCreateTaskOperator(
         task_id="ejecutar_calidad_ods",
         dataplex_task_id="ejecucion-manual-ods-{{ ds_nodash }}", # ID único para GCP
-        project_id="tu-proyecto-gcp",
+        project_id="data-ai-lab-485911",
         region="europe-west1",
         lake_id="tu-lake-id", 
         body={
@@ -53,12 +53,12 @@ with DAG("dag_sap_medallion", start_date=datetime(2025, 1, 1), schedule=None, ta
     # 3. EJECUCIÓN HACIA ADELANTE: Si el ODS es bueno, actualiza Gold
     run_gold = DataformCreateWorkflowInvocationOperator(
         task_id="run_gold_layer",
-        project_id="tu-nuevo-proyecto-gcp",
+        project_id="data-ai-lab-485911",
         region="europe-west1",
         repository_id="tu-repo-dataform",
         workflow_invocation={
             "invocation_config": {
-                "included_tags": ["gold"],
+                "included_tags": ["tabla_gold_1"],
                 "include_dependents": False # Solo Gold
             }
         }
